@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "@/components/Card";
+import { useRouter } from "expo-router";
 
 const AllGroups = () => {
+  const router = useRouter();
+
   const groups = [
     {
       id: "1",
@@ -34,7 +37,12 @@ const AllGroups = () => {
         <Card key={item.id} text={item.name} onPress={() => alert(item.name)} />
       ))}
       <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>Add</Text>
+        <Text
+          style={styles.addButtonText}
+          onPress={() => router.push("/addGroup")}
+        > 
+          Add
+        </Text>
       </TouchableOpacity>
     </View>
   );
