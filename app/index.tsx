@@ -7,10 +7,8 @@ export default function Index() {
   const router = useRouter();
   return (
     <View style={styles.container}>
-      <Card
-        text="Show All Groups"
-        onPress={() => router.push("/allGroups")}
-      />
+      <Text style={styles.title}>Main</Text>
+      <Card text="Show All Groups" onPress={() => router.push("/allGroups")} />
       <Card
         text="Show Today's Lessons"
         onPress={() => alert("Show Today's Lessons")}
@@ -41,6 +39,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
   footer: {
     position: "absolute",

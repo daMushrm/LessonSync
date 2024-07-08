@@ -1,51 +1,39 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "@/components/Card";
-import { addGroup, getGroups } from "@/storage/operations/groups";
 
-const AllGroups: React.FC = () => {
-  const [groups, setGroups] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchGroups = async () => {
-      const fetchedGroups = await getGroups();
-      setGroups(fetchedGroups);
-    };
-
-    fetchGroups();
-  }, []);
-
-  const handleAddGroup = async () => {
-    const newGroup = {
-      id: (groups.length + 1).toString(),
-      name: `Group ${groups.length + 1}`,
-      time: new Date().toISOString(),
-      day: "Thursday", // Example day
+const AllGroups = () => {
+  const groups = [
+    {
+      id: "1",
+      name: "Group 1",
+      time: "2024-07-08T12:00:00Z",
+      day: "Monday",
       students: [],
-    };
-
-    await addGroup(newGroup);
-    const updatedGroups = await getGroups();
-    setGroups(updatedGroups);
-  };
+    },
+    {
+      id: "2",
+      name: "Group 2",
+      time: "2024-07-08T12:00:00Z",
+      day: "Tuesday",
+      students: [],
+    },
+    {
+      id: "3",
+      name: "Group 3",
+      time: "2024-07-08T12:00:00Z",
+      day: "Wednesday",
+      students: [],
+    },
+  ];
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Card text={item.name} onPress={() => alert(item.name)} />
-        )}
-        contentContainerStyle={styles.listContainer}
-      />
-      <TouchableOpacity style={styles.addButton} onPress={handleAddGroup}>
+      <Text style={styles.title}>All Groups</Text>
+      {groups.map((item) => (
+        <Card key={item.id} text={item.name} onPress={() => alert(item.name)} />
+      ))}
+      <TouchableOpacity style={styles.addButton}>
         <Text style={styles.addButtonText}>Add</Text>
       </TouchableOpacity>
     </View>
@@ -55,11 +43,15 @@ const AllGroups: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "#ffffff",
     padding: 16,
   },
-  listContainer: {
-    paddingBottom: 80, // To ensure the add button doesn't cover the last item
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
   addButton: {
     position: "absolute",
