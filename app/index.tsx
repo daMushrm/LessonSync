@@ -1,33 +1,24 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Linking,
-} from "react-native";
+import { View, Text, StyleSheet, Linking } from "react-native";
+import Card from "@/components/Card";
+import { useRouter } from "expo-router";
 
-export default function App() {
+export default function Index() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => alert("Show All Groups")}
-      >
-        <Text style={styles.cardText}>Show All Groups</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.card}
+      <Card
+        text="Show All Groups"
+        onPress={() => router.push("/allGroups")}
+      />
+      <Card
+        text="Show Today's Lessons"
         onPress={() => alert("Show Today's Lessons")}
-      >
-        <Text style={styles.cardText}>Show Today's Lessons</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.card}
+      />
+      <Card
+        text="Attendance History"
         onPress={() => alert("Attendance History")}
-      >
-        <Text style={styles.cardText}>Attendance History</Text>
-      </TouchableOpacity>
+      />
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           Made by{" "}
@@ -50,21 +41,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
-  },
-  card: {
-    width: "90%",
-    marginVertical: 10,
-    padding: 20,
-    backgroundColor: "#fff",
-    borderWidth: 2,
-    borderColor: "#000",
-    borderRadius: 10,
-  },
-  cardText: {
-    fontSize: 18,
-    color: "#333333",
-    textAlign: "center",
-    fontWeight: "bold",
   },
   footer: {
     position: "absolute",
