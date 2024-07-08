@@ -1,14 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, Linking } from "react-native";
 import Card from "@/components/Card";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 
 export default function Index() {
-  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Main</Text>
-      <Card text="Show All Groups" onPress={() => router.push("/allGroups")} />
+      <Card text="Show All Groups" onPress={() => router.push("/groups/allGroups")} />
       <Card
         text="Show Today's Lessons"
         onPress={() => alert("Show Today's Lessons")}

@@ -1,11 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "@/components/Card";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 
 const AllGroups = () => {
-  const router = useRouter();
-
   const groups = [
     {
       id: "1",
@@ -34,14 +32,18 @@ const AllGroups = () => {
     <View style={styles.container}>
       <Text style={styles.title}>All Groups</Text>
       {groups.map((item) => (
-        <Card key={item.id} text={item.name} onPress={() => alert(item.name)} />
+        <Card
+          key={item.id}
+          text={item.name}
+          onPress={() => router.push("/groups/showGroup")}
+        />
       ))}
       <TouchableOpacity style={styles.addButton}>
         <Text
           style={styles.addButtonText}
-          onPress={() => router.push("/addGroup")}
-        > 
-          Add
+          onPress={() => router.push("/groups/addGroup")}
+        >
+          Add Group
         </Text>
       </TouchableOpacity>
     </View>
@@ -64,11 +66,12 @@ const styles = StyleSheet.create({
   addButton: {
     position: "absolute",
     bottom: 20,
+    left: 20,
     right: 20,
     backgroundColor: "#000",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 10,
+    alignItems: "center",
   },
   addButtonText: {
     color: "#fff",

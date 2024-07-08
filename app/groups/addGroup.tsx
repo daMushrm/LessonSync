@@ -5,11 +5,14 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
+import { router } from "expo-router";
 
 const AddGroups = () => {
+
   const [name, setName] = useState("");
   const [day, setDay] = useState("Monday");
   const [time, setTime] = useState(new Date());
@@ -26,11 +29,17 @@ const AddGroups = () => {
   ];
 
   const handleSaveGroup = () => {
+    if (!name.trim() || !day || !time) {
+      Alert.alert("Error", "Please fill out all fields.");
+      return;
+    }
+
     // Handle saving the group data (name, day, time) here
     console.log("Name:", name);
     console.log("Day:", day);
     console.log("Time:", time);
     // Add your logic to save the data to your backend or storage
+    router.push("/allGroups");
   };
 
   const showTimePicker = () => {
@@ -41,7 +50,7 @@ const AddGroups = () => {
     setTimePickerVisibility(false);
   };
 
-  const handleTimeConfirm = (selectedTime: Date) => {
+  const handleTimeConfirm = (selectedTime: any) => {
     setTime(selectedTime);
     hideTimePicker();
   };
