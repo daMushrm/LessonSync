@@ -7,8 +7,15 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
-      <Tabs.Screen name="index" options={{ headerShown: false, title: "Today" }} />
+      <Tabs.Screen
+        name="index"
+        options={{ headerShown: false, title: "Today" }}
+      />
       <Tabs.Screen name="allGroups" options={{ title: "All Groups" }} />
+      {/* <Tabs.Screen
+        name="groups/addGroup"
+        options={{  }}
+      /> */}
     </Tabs>
   );
 }
