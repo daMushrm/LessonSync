@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import Card from "@/components/Card"; // Assuming you have a Card component
+import { router } from "expo-router";
 
 const showGroup = () => {
   const [groupName, setGroupName] = useState("Group 1");
@@ -28,7 +29,7 @@ const showGroup = () => {
   ]);
 
   const handleAddStudent = () => {
-    // Placeholder for adding a new student logic
+    router.push("/students/addStudent");
     console.log("Add student");
   };
 
@@ -64,6 +65,10 @@ const showGroup = () => {
           ))}
         </ScrollView>
       </View>
+
+      <TouchableOpacity style={styles.attButton}>
+        <Text style={styles.attButtonText}>Attendance History</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
         <Text style={styles.addButtonText}>Add Student</Text>
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   studentsContainer: {
-    maxHeight: 470,
+    maxHeight: 400,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: "#ccc",
@@ -125,6 +130,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  attButton: {
+    position: "absolute",
+    bottom: 80,
+    left: 20,
+    right: 20,
+    backgroundColor: "#000",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  attButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",

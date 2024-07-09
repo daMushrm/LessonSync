@@ -38,7 +38,7 @@ const addGroup = () => {
     console.log("Day:", day);
     console.log("Time:", time);
     // Add your logic to save the data to your backend or storage
-    router.push("/allGroups");
+    router.back();
   };
 
   const showTimePicker = () => {
