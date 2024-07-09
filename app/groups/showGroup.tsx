@@ -60,7 +60,14 @@ const showGroup = () => {
               key={student.id}
               onPress={() => handleStudentPress(student)}
             >
-              <Card text={student.name} />
+              <Card
+                text={student.name}
+                onPress={() =>
+                  router.push(
+                    "students/editStudent?name=John%20Doe&phone=1234567890&parentPhone=0987654321"
+                  )
+                }
+              />
             </TouchableOpacity>
           ))}
         </ScrollView>
