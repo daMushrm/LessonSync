@@ -11,8 +11,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 
-const AddGroups = () => {
-
+const addGroup = () => {
   const [name, setName] = useState("");
   const [day, setDay] = useState("Monday");
   const [time, setTime] = useState(new Date());
@@ -136,4 +135,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddGroups;
+export default addGroup;

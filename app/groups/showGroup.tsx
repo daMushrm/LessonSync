@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Card from "@/components/Card"; // Assuming you have a Card component
 
-const GroupDetailsPage = () => {
+const showGroup = () => {
   const [groupName, setGroupName] = useState("Group 1");
   const [day, setDay] = useState("Monday");
   const [time, setTime] = useState("12:00 PM");
@@ -131,4 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GroupDetailsPage;
+export default showGroup;
