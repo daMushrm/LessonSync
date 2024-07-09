@@ -14,6 +14,10 @@ export default function RootLayout() {
         name="students/editStudent"
         options={{ title: "Edit Student" }}
       />
+      <Stack.Screen
+        name="attendance/showAttendance"
+        options={{ title: "Attendance" }}
+      />
     </Stack>
   );
 }

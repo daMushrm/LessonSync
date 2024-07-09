@@ -10,7 +10,7 @@ import Card from "@/components/Card"; // Assuming you have a Card component
 import { router } from "expo-router";
 
 const showGroup = () => {
-  const [groupName, setGroupName] = useState("Group 1");
+  const [groupName, setGroupName] = useState("Groujp 1");
   const [day, setDay] = useState("Monday");
   const [time, setTime] = useState("12:00 PM");
   const [students, setStudents] = useState([
@@ -30,12 +30,10 @@ const showGroup = () => {
 
   const handleAddStudent = () => {
     router.push("/students/addStudent");
-    console.log("Add student");
   };
 
-  const handleStudentPress = (student: any) => {
-    // Placeholder for student card press logic
-    console.log("Student pressed:", student.name);
+  const handleStudentPress = () => {
+    router.push("/students/editStudent");
   };
 
   return (
@@ -56,24 +54,17 @@ const showGroup = () => {
         <Text style={styles.studentsHeader}>Students:</Text>
         <ScrollView style={styles.studentsContainer}>
           {students.map((student) => (
-            <TouchableOpacity
-              key={student.id}
-              onPress={() => handleStudentPress(student)}
-            >
-              <Card
-                text={student.name}
-                onPress={() =>
-                  router.push(
-                    "students/editStudent?name=John%20Doe&phone=1234567890&parentPhone=0987654321"
-                  )
-                }
-              />
+            <TouchableOpacity key={student.id}>
+              <Card text={student.name} onPress={() => handleStudentPress()} />
             </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
 
-      <TouchableOpacity style={styles.attButton}>
+      <TouchableOpacity
+        style={styles.attButton}
+        onPress={() => router.push("/attendance/showAttendance")}
+      >
         <Text style={styles.attButtonText}>Attendance History</Text>
       </TouchableOpacity>
 
