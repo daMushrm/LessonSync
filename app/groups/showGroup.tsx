@@ -10,7 +10,7 @@ import Card from "@/components/Card"; // Assuming you have a Card component
 import { router } from "expo-router";
 
 const showGroup = () => {
-  const [groupName, setGroupName] = useState("Groujp 1");
+  const [groupName, setGroupName] = useState("Group 1");
   const [day, setDay] = useState("Monday");
   const [time, setTime] = useState("12:00 PM");
   const [students, setStudents] = useState([
@@ -61,12 +61,21 @@ const showGroup = () => {
         </ScrollView>
       </View>
 
-      <TouchableOpacity
-        style={styles.attButton}
-        onPress={() => router.push("/attendance/showAttendance")}
-      >
-        <Text style={styles.attButtonText}>Attendance History</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.attButton}
+          onPress={() => router.push("/attendance/showAttendance")}
+        >
+          <Text style={styles.attButtonText}>Attendance</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.payButton}
+          onPress={() => router.push("/paying/showPaying")}
+        >
+          <Text style={styles.payButtonText}>Paying</Text>
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
         <Text style={styles.addButtonText}>Add Student</Text>
@@ -117,32 +126,48 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
   },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "#000",
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  attButton: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderColor: "#000",
+    borderWidth: 1,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
+    marginRight: 10,
   },
-  addButtonText: {
-    color: "#fff",
+  attButtonText: {
+    color: "#000",
     fontSize: 18,
     fontWeight: "bold",
   },
-  attButton: {
-    position: "absolute",
-    bottom: 80,
-    left: 20,
-    right: 20,
-    backgroundColor: "#000",
+  payButton: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderColor: "#000",
+    borderWidth: 1,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
   },
-  attButtonText: {
+  payButtonText: {
+    color: "#000",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  addButton: {
+    backgroundColor: "#000",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  addButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
