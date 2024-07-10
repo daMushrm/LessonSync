@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
+import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 
 const studentsData = [
@@ -17,8 +18,17 @@ const studentsData = [
   { id: "3", name: "Student 3", checked: false },
 ];
 
-const showAttendance = () => {
+const datesData = [
+  "2024-07-01",
+  "2024-07-02",
+  "2024-07-03",
+  "2024-07-04",
+  "2024-07-05",
+];
+
+const ShowAttendance = () => {
   const [students, setStudents] = useState(studentsData);
+  const [selectedDate, setSelectedDate] = useState(datesData[0]);
 
   const handleCheck = (id: string) => {
     const updatedStudents = students.map((student) =>
@@ -28,9 +38,9 @@ const showAttendance = () => {
   };
 
   const handleSave = () => {
+    // Add your logic to save the data to your backend or storage
     students.filter((student) => !student.checked);
     router.back();
-    // Add your logic to save the data to your backend or storage
   };
 
   const openWhatsApp = (studentName: string) => {
@@ -60,6 +70,17 @@ const showAttendance = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Choose Attendance Date</Text>
+      <Picker
+        selectedValue={selectedDate}
+        onValueChange={(itemValue) => setSelectedDate(itemValue)}
+        style={styles.picker}
+      >
+        {datesData.map((date) => (
+          <Picker.Item key={date} label={date} value={date} />
+        ))}
+      </Picker>
+
       <FlatList
         data={students}
         keyExtractor={(item) => item.id}
@@ -78,6 +99,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    marginBottom: 16,
   },
   listContainer: {
     paddingBottom: 80,
@@ -112,4 +144,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default showAttendance;
+export default ShowAttendance;

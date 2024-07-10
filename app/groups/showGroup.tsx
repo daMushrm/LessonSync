@@ -63,7 +63,7 @@ const showGroup = () => {
 
       <TouchableOpacity
         style={styles.attButton}
-        onPress={() => router.push("/attendance/chooseAttendanceDate")}
+        onPress={() => router.push("/attendance/showAttendance")}
       >
         <Text style={styles.attButtonText}>Attendance History</Text>
       </TouchableOpacity>
