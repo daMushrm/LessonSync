@@ -10,8 +10,9 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
+import { addGroup } from "@/realm/operations/groupOperations";
 
-const addGroup = () => {
+const AddGroup = () => {
   const [name, setName] = useState("");
   const [day, setDay] = useState("Monday");
   const [time, setTime] = useState(new Date());
@@ -33,12 +34,15 @@ const addGroup = () => {
       return;
     }
 
-    // Handle saving the group data (name, day, time) here
-    console.log("Name:", name);
-    console.log("Day:", day);
-    console.log("Time:", time);
-    // Add your logic to save the data to your backend or storage
-    router.back();
+    // Save the group data to the database
+    try {
+      addGroup(name, time, day);
+      Alert.alert("Success", "Group added successfully");
+      router.back();
+    } catch (error) {
+      Alert.alert("Error", "Failed to add group");
+      console.error(error);
+    }
   };
 
   const showTimePicker = () => {
@@ -135,4 +139,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default addGroup;
+export default AddGroup;
