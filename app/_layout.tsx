@@ -15,6 +15,10 @@ export default function RootLayout() {
         options={{ title: "Edit Student" }}
       />
       <Stack.Screen
+        name="attendance/chooseAttendanceDate"
+        options={{ title: "Choose Attendance Date" }}
+      />
+      <Stack.Screen
         name="attendance/showAttendance"
         options={{ title: "Attendance" }}
       />
