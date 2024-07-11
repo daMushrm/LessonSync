@@ -25,7 +25,7 @@ const AddStudent = () => {
     try {
       await addStudent(name, phone, parentPhone, Number(group_id));
       Alert.alert("Success", "Student added successfully!");
-      router.back();
+      router.push("/groups/showGroup?group_id=" + group_id + "&refresh=true");
     } catch (error) {
       Alert.alert("Error", "Failed to add student. Please try again.");
       console.error("Error adding student:", error);

@@ -10,7 +10,7 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import { addGroup, createTables } from "@/sqlite/groups";
+import { addGroup, createGroupTables } from "@/sqlite/groups";
 
 const AddGroup = () => {
   const [name, setName] = useState("");
@@ -19,7 +19,7 @@ const AddGroup = () => {
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   useEffect(() => {
-    createTables();
+    createGroupTables();
   }, []);
 
   const handleSaveGroup = async () => {

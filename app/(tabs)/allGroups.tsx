@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "@/components/Card";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Group, createGroupTables, getAllGroups } from "@/sqlite/groups";
 
 const AllGroups = () => {
   const [groups, setGroups] = useState<Group[]>([]);
+
+  const { refresh } = useLocalSearchParams();
+  // refresh logic
+  const [data, setData] = useState<string>("");
+  const refreshData = () => setData("result");
 
   const fetchGroups = async () => {
     const fetchedGroups = await getAllGroups();
@@ -13,9 +18,13 @@ const AllGroups = () => {
   };
 
   useEffect(() => {
-    createGroupTables().then(() => {
-      fetchGroups();
-    });
+    // refresh logic
+    if (refresh) {
+      void refreshData();
+    }
+
+    createGroupTables();
+    fetchGroups();
   }, []);
 
   return (
