@@ -34,7 +34,18 @@ const AllGroups = () => {
         <Card
           key={item.id}
           text={item.name}
-          onPress={() => router.push("/groups/showGroup?group_id=" + item.id)}
+          onPress={() =>
+            router.push(
+              "/groups/showGroup?group_id=" +
+                item.id +
+                "&group_name=" +
+                item.name +
+                "&group_day=" +
+                item.day +
+                "&group_time=" +
+                item.time
+            )
+          }
         />
       ))}
       <TouchableOpacity

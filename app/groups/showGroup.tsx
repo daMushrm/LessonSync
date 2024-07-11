@@ -11,7 +11,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { createStudentTables, getStudentsByGroupId } from "@/sqlite/students";
 
 const ShowGroup = () => {
-  const { group_id, refresh } = useLocalSearchParams();
+  const { group_id, refresh, group_name, group_day, group_time } =
+    useLocalSearchParams();
   const [groupName, setGroupName] = useState("");
   const [day, setDay] = useState("");
   const [time, setTime] = useState("12:00 PM");
@@ -26,6 +27,10 @@ const ShowGroup = () => {
     if (refresh) {
       void refreshData();
     }
+
+    setGroupName(group_name?.toString() || "");
+    setDay(group_day?.toString() || "");
+    setTime(group_time?.toString() || "");
 
     const fetchStudents = async () => {
       if (group_id) {
