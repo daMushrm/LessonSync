@@ -7,27 +7,29 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import { addStudent } from "@/sqlite/students";
 
 const AddStudent = () => {
+  const { group_id } = useLocalSearchParams();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [parentPhone, setParentPhone] = useState("");
 
-  const handleAddStudent = () => {
+  const handleAddStudent = async () => {
     if (!name.trim() || !phone.trim() || !parentPhone.trim()) {
       Alert.alert("Error", "Please fill out all fields.");
       return;
     }
 
-    // Handle saving the student data here
-    console.log("Name:", name);
-    console.log("Phone:", phone);
-    console.log("Parent Phone:", parentPhone);
-    // Add your logic to save the data to your backend or storage
-
-    // Navigate back or to another screen
-    router.back();
+    try {
+      await addStudent(name, phone, parentPhone, Number(group_id));
+      Alert.alert("Success", "Student added successfully!");
+      router.back();
+    } catch (error) {
+      Alert.alert("Error", "Failed to add student. Please try again.");
+      console.error("Error adding student:", error);
+    }
   };
 
   return (

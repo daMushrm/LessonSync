@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,34 +6,34 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import Card from "@/components/Card"; // Assuming you have a Card component
-import { router } from "expo-router";
+import Card from "@/components/Card";
+import { router, useLocalSearchParams } from "expo-router";
+import { createStudentTables, getStudentsByGroupId } from "@/sqlite/students";
 
-const showGroup = () => {
-  const [groupName, setGroupName] = useState("Group 1");
-  const [day, setDay] = useState("Monday");
+const ShowGroup = () => {
+  const { group_id } = useLocalSearchParams();
+  const [groupName, setGroupName] = useState("");
+  const [day, setDay] = useState("");
   const [time, setTime] = useState("12:00 PM");
-  const [students, setStudents] = useState([
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
-    { id: 3, name: "Alice Johnson" },
-    { id: 4, name: "Bob Brown" },
-    { id: 5, name: "Charlie White" },
-    { id: 6, name: "David Black" },
-    { id: 7, name: "Eve Green" },
-    { id: 8, name: "Frank Grey" },
-    { id: 9, name: "Grace Orange" },
-    { id: 10, name: "Henry Purple" },
-    { id: 11, name: "Ivy Red" },
-    { id: 12, name: "Jack Yellow" },
-  ]);
+  const [students, setStudents] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      if (group_id) {
+        await createStudentTables();
+        const students = await getStudentsByGroupId(Number(group_id));
+        setStudents(students);
+      }
+    };
+    fetchStudents();
+  }, [group_id]);
 
   const handleAddStudent = () => {
-    router.push("/students/addStudent");
+    router.push("/students/addStudent?group_id=" + group_id);
   };
 
-  const handleStudentPress = () => {
-    router.push("/students/editStudent");
+  const handleStudentPress = (studentId: number) => {
+    router.push(`/students/editStudent?id=${studentId}`);
   };
 
   return (
@@ -54,8 +54,11 @@ const showGroup = () => {
         <Text style={styles.studentsHeader}>Students:</Text>
         <ScrollView style={styles.studentsContainer}>
           {students.map((student) => (
-            <TouchableOpacity key={student.id}>
-              <Card text={student.name} onPress={() => handleStudentPress()} />
+            <TouchableOpacity
+              key={student.id}
+              onPress={() => handleStudentPress(student.id)}
+            >
+              <Card text={student.name} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -174,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default showGroup;
+export default ShowGroup;

@@ -5,7 +5,7 @@ const openGroupsAsync = async () => {
 };
 
 // Create the tables if they don't exist
-const createTables = async (): Promise<void> => {
+const createGroupTables = async (): Promise<void> => {
   try {
     const db = await openGroupsAsync();
     await db.execAsync(`
@@ -54,7 +54,7 @@ const addGroup = async (
   }
 };
 
-export { createTables, getAllGroups, addGroup };
+export { createGroupTables, getAllGroups, addGroup };
 
 export interface Group {
   id: number;

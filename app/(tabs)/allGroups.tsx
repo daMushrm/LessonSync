@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "@/components/Card";
 import { router } from "expo-router";
-import { Group, createTables, getAllGroups } from "@/sqlite/groups";
+import { Group, createGroupTables, getAllGroups } from "@/sqlite/groups";
 
 const AllGroups = () => {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -13,7 +13,7 @@ const AllGroups = () => {
   };
 
   useEffect(() => {
-    createTables().then(() => {
+    createGroupTables().then(() => {
       fetchGroups();
     });
   }, []);
@@ -25,7 +25,7 @@ const AllGroups = () => {
         <Card
           key={item.id}
           text={item.name}
-          onPress={() => router.push("/groups/showGroup")}
+          onPress={() => router.push("/groups/showGroup?group_id=" + item.id)}
         />
       ))}
       <TouchableOpacity
