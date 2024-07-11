@@ -1,32 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "@/components/Card";
 import { router } from "expo-router";
+import { Group, createTables, getAllGroups } from "@/sqlite/groups";
 
 const AllGroups = () => {
-  const groups = [
-    {
-      id: "1",
-      name: "Group 1",
-      time: "2024-07-08T12:00:00Z",
-      day: "Monday",
-      students: [],
-    },
-    {
-      id: "2",
-      name: "Group 2",
-      time: "2024-07-08T12:00:00Z",
-      day: "Tuesday",
-      students: [],
-    },
-    {
-      id: "3",
-      name: "Group 3",
-      time: "2024-07-08T12:00:00Z",
-      day: "Wednesday",
-      students: [],
-    },
-  ];
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  const fetchGroups = async () => {
+    const fetchedGroups = await getAllGroups();
+    setGroups(fetchedGroups);
+  };
+
+  useEffect(() => {
+    createTables().then(() => {
+      fetchGroups();
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -38,13 +28,11 @@ const AllGroups = () => {
           onPress={() => router.push("/groups/showGroup")}
         />
       ))}
-      <TouchableOpacity style={styles.addButton}>
-        <Text
-          style={styles.addButtonText}
-          onPress={() => router.push("/groups/addGroup")}
-        >
-          Add Group
-        </Text>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => router.push("/groups/addGroup")}
+      >
+        <Text style={styles.addButtonText}>Add Group</Text>
       </TouchableOpacity>
     </View>
   );

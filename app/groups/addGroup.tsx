@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import { addGroup } from "@/realm/operations/groupOperations";
+import { addGroup, createTables } from "@/sqlite/groups";
 
 const AddGroup = () => {
   const [name, setName] = useState("");
@@ -18,31 +18,17 @@ const AddGroup = () => {
   const [time, setTime] = useState(new Date());
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
-  const daysOfWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
+  useEffect(() => {
+    createTables();
+  }, []);
 
-  const handleSaveGroup = () => {
+  const handleSaveGroup = async () => {
     if (!name.trim() || !day || !time) {
       Alert.alert("Error", "Please fill out all fields.");
       return;
     }
-
-    // Save the group data to the database
-    try {
-      addGroup(name, time, day);
-      Alert.alert("Success", "Group added successfully");
-      router.back();
-    } catch (error) {
-      Alert.alert("Error", "Failed to add group");
-      console.error(error);
-    }
+    await addGroup(name, day, time.toLocaleTimeString());
+    router.back();
   };
 
   const showTimePicker = () => {
@@ -64,17 +50,21 @@ const AddGroup = () => {
       <TextInput
         style={styles.input}
         value={name}
-        onChangeText={(text) => setName(text)}
+        onChangeText={setName}
         placeholder="Enter group name"
       />
 
       <Text style={styles.label}>Day:</Text>
-      <Picker
-        style={styles.picker}
-        selectedValue={day}
-        onValueChange={(itemValue) => setDay(itemValue)}
-      >
-        {daysOfWeek.map((day) => (
+      <Picker style={styles.picker} selectedValue={day} onValueChange={setDay}>
+        {[
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ].map((day) => (
           <Picker.Item key={day} label={day} value={day} />
         ))}
       </Picker>
