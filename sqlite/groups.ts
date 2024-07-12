@@ -47,6 +47,19 @@ const getGroupById = async (id: number): Promise<Group | undefined> => {
   }
 };
 
+const getGroupsByDay = async (day: string): Promise<any | []> => {
+  try {
+    const db = await openGroupsAsync();
+    const allRows = await db.getAllAsync("SELECT * FROM groups WHERE day = ?", [
+      day,
+    ]);
+    return allRows as any;
+  } catch (error) {
+    console.error("Error in getGroupByDate:", error);
+    return [];
+  }
+};
+
 const addGroup = async (
   name: string,
   day: string,
@@ -82,7 +95,14 @@ const updateGroup = async (
   }
 };
 
-export { createGroupTables, getAllGroups, addGroup, updateGroup, getGroupById };
+export {
+  createGroupTables,
+  getAllGroups,
+  addGroup,
+  updateGroup,
+  getGroupById,
+  getGroupsByDay,
+};
 
 export interface Group {
   id: number;

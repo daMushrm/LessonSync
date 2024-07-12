@@ -1,35 +1,43 @@
-import React from "react";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-interface CardProps {
-  text: string;
-  onPress?: () => void;
-}
-
-const Card = ({ text, onPress }: CardProps) => {
-  return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Text style={styles.cardText}>{text}</Text>
-    </TouchableOpacity>
-  );
-};
+const GroupCard = ({ group }: any) => (
+  <TouchableOpacity
+    style={styles.card}
+    onPress={() => router.push("/groups/showGroup?group_id=" + group.id)}
+  >
+    <Text style={styles.cardTitle}>{group.name}</Text>
+    <View style={styles.cardTimeContainer}>
+      <Feather name="clock" size={16} color="gray" />
+      <Text style={styles.cardTime}>
+        {group.day}, {group.time}
+      </Text>
+    </View>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   card: {
-    width: "90%",
-    marginVertical: 10,
-    padding: 20,
-    backgroundColor: "#fff",
-    borderWidth: 2,
-    borderColor: "#000",
+    backgroundColor: "#f0f0f0",
     borderRadius: 10,
+    padding: 16,
+    marginBottom: 10,
+    borderWidth: 2,
   },
-  cardText: {
+  cardTitle: {
     fontSize: 18,
-    color: "#333333",
-    textAlign: "center",
     fontWeight: "bold",
+    marginBottom: 8,
+  },
+  cardTimeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardTime: {
+    marginLeft: 8,
+    color: "gray",
   },
 });
 
-export default Card;
+export default GroupCard;

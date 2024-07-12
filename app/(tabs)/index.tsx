@@ -1,35 +1,68 @@
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { getGroupsByDay } from "@/sqlite/groups";
-import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import GroupCard from "@/components/Card";
+
+const welcomePhrases = [
+  "Let's dive into today's teaching!",
+  "Ready for an exciting day of learning?",
+  "Time to inspire young minds!",
+  "Another day to make a difference!",
+  "Eager to share knowledge today?",
+];
 
 const Index = () => {
-  const getTodaysGroups = async () => {
-    const today = new Date().toLocaleDateString("en-US", {
-      weekday: "long",
-    });
-    return await getGroupsByDay(today);
-  };
+  const [todaysGroups, setTodaysGroups] = useState([]);
+  const [welcomePhrase, setWelcomePhrase] = useState("");
+
+  const name = "Tarek"; // This could be dynamic, fetched from user profile
 
   useEffect(() => {
     const fetchTodaysGroups = async () => {
-      const todaysGroups = await getTodaysGroups();
-      console.log(todaysGroups);
+      const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+      const groups = await getGroupsByDay(today);
+      setTodaysGroups(groups);
     };
     fetchTodaysGroups();
+    setWelcomePhrase(
+      welcomePhrases[Math.floor(Math.random() * welcomePhrases.length)]
+    );
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Index's Lessons</Text>
+      <Text style={styles.welcomeText}>Welcome, {name}!</Text>
+      <Text style={styles.phraseText}>{welcomePhrase}</Text>
+      <ScrollView style={styles.scrollView}>
+        {todaysGroups.map((group) => (
+          <GroupCard group={group} />
+        ))}
+      </ScrollView>
     </View>
   );
 };
-export default Index;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  welcomeText: {
+    fontSize: 28,
+    marginBottom: 8,
+    textAlign: "center",
+    fontWeight: "bold",
+    marginTop: 60,
+  },
+  phraseText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  scrollView: {
+    flex: 1,
   },
 });
+
+export default Index;

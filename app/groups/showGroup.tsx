@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { createStudentTables, getStudentsByGroupId } from "@/sqlite/students";
+import { getStudentsByGroupId } from "@/sqlite/students";
 import { getGroupById } from "@/sqlite/groups";
 
 const ShowGroup = () => {
