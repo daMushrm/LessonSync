@@ -38,7 +38,6 @@ const ShowGroup = () => {
 
     const fetchStudents = async () => {
       if (group_id) {
-        await createStudentTables();
         const students = await getStudentsByGroupId(Number(group_id));
         setStudents(students);
         setLoading(false);
@@ -124,7 +123,9 @@ const ShowGroup = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.attButton}
-          onPress={() => router.push("/attendance/showAttendance")}
+          onPress={() =>
+            router.push("/attendance/showAttendance?group_id=" + group_id)
+          }
         >
           <Text style={styles.attButtonText}>Attendance</Text>
         </TouchableOpacity>

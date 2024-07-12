@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,37 +10,104 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
-
-const studentsData = [
-  { id: "1", name: "Student 1", checked: false },
-  { id: "2", name: "Student 2", checked: false },
-  { id: "3", name: "Student 3", checked: false },
-];
-
-const datesData = [
-  "2024-07-01",
-  "2024-07-02",
-  "2024-07-03",
-  "2024-07-04",
-  "2024-07-05",
-];
+import { router, useLocalSearchParams } from "expo-router";
+import { getStudentsByGroupId } from "@/sqlite/students";
+import {
+  addAttendance,
+  createAttendanceTables,
+  getAttendanceByGroupId,
+  updateAttendance,
+} from "@/sqlite/attendance";
 
 const ShowAttendance = () => {
-  const [students, setStudents] = useState(studentsData);
-  const [selectedDate, setSelectedDate] = useState(datesData[0]);
+  const { group_id } = useLocalSearchParams();
+  const [listedStudents, setListedStudents] = useState<
+    { id: number; name: string; checked: boolean; student_id: number }[]
+  >([]);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [dates, setDates] = useState<string[]>([]);
+  const [groupStudents, setGroupStudents] = useState<any[]>([]);
 
-  const handleCheck = (id: string) => {
-    const updatedStudents = students.map((student) =>
+  const fetchAttendance = async (groupId: number) => {
+    const result = await getAttendanceByGroupId(groupId);
+    setAttendance(result);
+  };
+
+  const getDates = async () => {
+    try {
+      const uniqueDates = [...new Set(attendance.map((record) => record.date))];
+      setDates(uniqueDates);
+      if (uniqueDates.length > 0) {
+        setSelectedDate(uniqueDates[0]);
+        setListedStudents(
+          attendance.filter((record) => record.date === uniqueDates[0])
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching dates:", error);
+    }
+  };
+
+  const fetchStudents = async (groupId: number) => {
+    const students = await getStudentsByGroupId(groupId);
+    setGroupStudents(students);
+  };
+
+  useEffect(() => {
+    createAttendanceTables();
+    fetchAttendance(Number(group_id));
+    fetchStudents(Number(group_id));
+  }, [group_id]);
+
+  useEffect(() => {
+    getDates();
+  }, [attendance]);
+
+  const handleCheck = (id: number) => {
+    const updatedStudents = listedStudents.map((student) =>
       student.id === id ? { ...student, checked: !student.checked } : student
     );
-    setStudents(updatedStudents);
+    setListedStudents(updatedStudents);
+  };
+
+  const handleChangeDate = (date: string) => {
+    setSelectedDate(date);
+    setListedStudents(
+      attendance.filter(
+        (record) => record.group_id === Number(group_id) && record.date === date
+      )
+    );
   };
 
   const handleSave = () => {
-    // Add your logic to save the data to your backend or storage
-    students.filter((student) => !student.checked);
+    listedStudents.forEach((student) => {
+      updateAttendance(student.id, student.checked);
+    });
     router.back();
+  };
+
+  const handleAdd = async () => {
+    const todaysDate = new Date().toISOString().split("T")[0];
+    Alert.alert(
+      "Confirm",
+      `Are you sure you want to add attendance for ${groupStudents.length} students?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Add",
+          onPress: async () => {
+            groupStudents.forEach((student) => {
+              addAttendance(todaysDate, Number(group_id), student.id, false);
+            });
+            fetchAttendance(Number(group_id));
+          },
+        },
+      ]
+    );
   };
 
   const openWhatsApp = (studentName: string) => {
@@ -52,7 +119,7 @@ const ShowAttendance = () => {
     <View style={styles.studentContainer}>
       <TouchableOpacity
         onPress={() => openWhatsApp(item.name)}
-        disabled={item.checked ? true : false}
+        disabled={item.checked}
       >
         <FontAwesome
           name="whatsapp"
@@ -60,7 +127,9 @@ const ShowAttendance = () => {
           color={item.checked ? "gray" : "green"}
         />
       </TouchableOpacity>
-      <Text style={styles.studentName}>{item.name}</Text>
+      <Text style={styles.studentName}>
+        {groupStudents.find((student) => student.id === item.student_id)?.name}
+      </Text>
       <Checkbox
         value={item.checked}
         onValueChange={() => handleCheck(item.id)}
@@ -73,22 +142,25 @@ const ShowAttendance = () => {
       <Text style={styles.title}>Choose Attendance Date</Text>
       <Picker
         selectedValue={selectedDate}
-        onValueChange={(itemValue) => setSelectedDate(itemValue)}
+        onValueChange={(itemValue) => handleChangeDate(itemValue)}
         style={styles.picker}
       >
-        {datesData.map((date) => (
+        {dates.map((date) => (
           <Picker.Item key={date} label={date} value={date} />
         ))}
       </Picker>
 
       <FlatList
-        data={students}
-        keyExtractor={(item) => item.id}
+        data={listedStudents}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderStudent}
         contentContainerStyle={styles.listContainer}
       />
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Save</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
+        <Text style={styles.saveButtonText}>Add</Text>
       </TouchableOpacity>
     </View>
   );
@@ -141,6 +213,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  addButton: {
+    position: "absolute",
+    bottom: 80,
+    left: 20,
+    right: 20,
+    backgroundColor: "#000",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
   },
 });
 

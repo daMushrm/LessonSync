@@ -17,7 +17,6 @@ const createGroupTables = async (): Promise<void> => {
         time TEXT NOT NULL
       );
     `);
-    console.log("Tables created");
   } catch (error) {
     console.error("Error in createTables:", error);
   }
@@ -28,7 +27,6 @@ const getAllGroups = async (): Promise<Group[]> => {
   try {
     const db = await openGroupsAsync();
     const allRows = await db.getAllAsync("SELECT * FROM groups");
-    console.log("Groups fetched:", allRows);
     return allRows as any[];
   } catch (error) {
     console.error("Error in getAllGroups:", error);
@@ -48,7 +46,6 @@ const addGroup = async (
       day,
       time,
     ]);
-    console.log("Group added");
   } catch (error) {
     console.error("Error in addGroup:", error);
   }
