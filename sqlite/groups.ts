@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 const openGroupsAsync = async () => {
-  return await SQLite.openDatabaseAsync("./groups.db");
+  return await SQLite.openDatabaseAsync("./db.db");
 };
 
 // Create the tables if they don't exist

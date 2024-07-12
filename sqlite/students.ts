@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 const openStudentsAsync = async () => {
-  return await SQLite.openDatabaseAsync("./students.db");
+  return await SQLite.openDatabaseAsync("./db.db");
 };
 
 // Create the tables if they don't exist
