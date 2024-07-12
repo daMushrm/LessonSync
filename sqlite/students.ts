@@ -61,7 +61,14 @@ const addStudent = async (
 const deleteStudent = async (id: number): Promise<void> => {
   try {
     const db = await openStudentsAsync();
-    await db.runAsync("DELETE FROM students WHERE id = ?", [id]);
+    await db.runAsync(
+      `
+      DELETE FROM students WHERE id = ?
+      DELETE FROM attendance WHERE student_id = ?;
+      DELETE FROM payment WHERE student_id = ?;
+    `,
+      [id, id, id]
+    );
   } catch (error) {
     console.error("Error in deleteStudent:", error);
   }
