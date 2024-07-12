@@ -137,7 +137,7 @@ const ShowPaying = () => {
           }
         })
       );
-      showToast("Saved successfully")
+      showToast("Saved successfully");
       router.back();
     } catch (error) {
       console.error("Error saving payments:", error);
@@ -153,11 +153,13 @@ const ShowPaying = () => {
   const renderStudent = ({ item }: { item: any }) => (
     <View style={styles.studentContainer}>
       <TouchableOpacity onPress={() => openWhatsApp(item.name)}>
-        <FontAwesome
-          name="whatsapp"
-          size={24}
-          color={item.checked ? "gray" : "green"}
-        />
+        {!item.checked && (
+          <FontAwesome
+            name="whatsapp"
+            size={24}
+            color={item.checked ? "gray" : "green"}
+          />
+        )}
       </TouchableOpacity>
       <Text style={styles.studentName}>
         {groupStudents.find((student) => student.id === item.student_id)?.name}

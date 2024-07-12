@@ -132,11 +132,13 @@ const ShowAttendance = () => {
         <TouchableOpacity
           onPress={() => openWhatsApp(parentPhone, whatsAppMessage)}
         >
-          <FontAwesome
-            name="whatsapp"
-            size={24}
-            color={item.checked ? "gray" : "green"}
-          />
+          {!item.checked && (
+            <FontAwesome
+              name="whatsapp"
+              size={24}
+              color={item.checked ? "gray" : "green"}
+            />
+          )}
         </TouchableOpacity>
         <Text style={styles.studentName}>{student?.name}</Text>
         <Checkbox

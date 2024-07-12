@@ -10,6 +10,7 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { addStudent } from "@/sqlite/students";
 import showToast from "@/components/showToast";
+import Toast from "react-native-toast-message";
 
 const AddStudent = () => {
   const { group_id } = useLocalSearchParams();
@@ -17,9 +18,21 @@ const AddStudent = () => {
   const [phone, setPhone] = useState("");
   const [parentPhone, setParentPhone] = useState("");
 
+  const showErrorToast = (msg: string) => {
+    Toast.show({
+      type: "error",
+      text1: msg,
+      position: "top",
+      text1Style: {
+        fontSize: 18,
+        fontWeight: "normal",
+      },
+    });
+  };
+
   const handleAddStudent = async () => {
     if (!name.trim() || !phone.trim() || !parentPhone.trim()) {
-      Alert.alert("Error", "Please fill out all fields.");
+      showErrorToast("Please fill all fields");
       return;
     }
 

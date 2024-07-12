@@ -9,9 +9,8 @@ import {
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { updateStudent, deleteStudent } from "@/sqlite/students";
-import { deleteAttendanceByStudentId } from "@/sqlite/attendance";
-import { deletePaymentByStudentId } from "@/sqlite/paying";
 import showToast from "@/components/showToast";
+import StudentModal from "@/components/student/StudentModal";
 
 const EditStudent = () => {
   const {
@@ -25,6 +24,7 @@ const EditStudent = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [parentPhone, setParentPhone] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     setId(studentId?.toString() || "");
@@ -60,21 +60,7 @@ const EditStudent = () => {
   };
 
   const confirmDelete = () => {
-    Alert.alert(
-      "Confirm Delete",
-      "Are you sure you want to delete this student?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: handleDeleteStudent,
-          style: "destructive",
-        },
-      ]
-    );
+    setModalVisible(true);
   };
 
   return (
@@ -112,6 +98,13 @@ const EditStudent = () => {
       <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
         <Text style={styles.deleteButtonText}>Delete Student</Text>
       </TouchableOpacity>
+
+      <StudentModal
+        isVisible={modalVisible}
+        message="Are you sure you want to delete this student?"
+        onConfirm={handleDeleteStudent}
+        onCancel={() => setModalVisible(false)}
+      />
     </View>
   );
 };
@@ -155,7 +148,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginTop: 5,
-    borderBottomColor: "red",
   },
   deleteButtonText: {
     color: "red",
