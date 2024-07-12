@@ -33,7 +33,6 @@ const getStudentsByGroupId = async (group_id: number): Promise<Student[]> => {
       "SELECT * FROM students WHERE group_id = ?",
       [group_id]
     );
-    console.log("Students fetched:", students);
     return students as Student[];
   } catch (error) {
     console.error("Error in getStudentsByGroupId:", error);

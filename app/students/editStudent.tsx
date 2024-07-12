@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { updateStudent } from "@/sqlite/students";
+import { updateStudent, deleteStudent } from "@/sqlite/students";
 
 const EditStudent = () => {
   const {
@@ -43,8 +43,35 @@ const EditStudent = () => {
       console.error("Error updating student:", error);
       Alert.alert("Error", "There was a problem updating the student.");
     }
+  };
 
-    router.back();
+  const handleDeleteStudent = async () => {
+    try {
+      await deleteStudent(Number(id));
+      Alert.alert("Success", "Student deleted successfully!");
+      router.back();
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      Alert.alert("Error", "There was a problem deleting the student.");
+    }
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this student?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: handleDeleteStudent,
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   return (
@@ -77,6 +104,10 @@ const EditStudent = () => {
 
       <TouchableOpacity style={styles.addButton} onPress={handleSaveStudent}>
         <Text style={styles.addButtonText}>Save Changes</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
+        <Text style={styles.deleteButtonText}>Delete Student</Text>
       </TouchableOpacity>
     </View>
   );
@@ -111,6 +142,21 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  deleteButton: {
+    backgroundColor: "#fff",
+    borderColor: "red",
+    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  deleteButtonText: {
+    color: "red",
     fontSize: 18,
     fontWeight: "bold",
   },
