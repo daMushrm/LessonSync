@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { Picker } from "@react-native-picker/picker";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { getStudentsByGroupId } from "@/sqlite/students";
 import {
   addAttendance,
@@ -18,6 +18,7 @@ import {
   getAttendanceByGroupId,
   updateAttendance,
 } from "@/sqlite/attendance";
+import openWhatsApp from "@/components/openWhatsApp";
 
 const ShowAttendance = () => {
   const { group_id } = useLocalSearchParams();
@@ -29,46 +30,43 @@ const ShowAttendance = () => {
   const [dates, setDates] = useState<string[]>([]);
   const [groupStudents, setGroupStudents] = useState<any[]>([]);
 
-  const fetchAttendance = async (groupId: number) => {
+  const fetchAttendance = useCallback(async (groupId: number) => {
     const result = await getAttendanceByGroupId(groupId);
     setAttendance(result);
-  };
+  }, []);
 
-  const getDates = async () => {
-    try {
-      const uniqueDates = [...new Set(attendance.map((record) => record.date))];
-      setDates(uniqueDates);
-      if (uniqueDates.length > 0) {
-        setSelectedDate(uniqueDates[0]);
-        setListedStudents(
-          // problem solved like a pro :D
-          attendance.map((record) => ({
-            id: record.id,
-            name: record.name,
-            checked: record.date === uniqueDates[0] && record.attended,
-            student_id: record.student_id,
-          }))
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching dates:", error);
+  const getDates = useCallback(() => {
+    const uniqueDates = [...new Set(attendance.map((record) => record.date))];
+    setDates(uniqueDates);
+    if (uniqueDates.length > 0) {
+      setSelectedDate(uniqueDates[0]);
+      setListedStudents(
+        attendance.map((record) => ({
+          id: record.id,
+          name: record.name,
+          checked: record.date === uniqueDates[0] && record.attended,
+          student_id: record.student_id,
+        }))
+      );
     }
-  };
+  }, [attendance]);
 
-  const fetchStudents = async (groupId: number) => {
+  const fetchStudents = useCallback(async (groupId: number) => {
     const students = await getStudentsByGroupId(groupId);
     setGroupStudents(students);
-  };
+  }, []);
 
-  useEffect(() => {
-    createAttendanceTables();
-    fetchAttendance(Number(group_id));
-    fetchStudents(Number(group_id));
-  }, [group_id]);
+  useFocusEffect(
+    useCallback(() => {
+      createAttendanceTables();
+      fetchAttendance(Number(group_id));
+      fetchStudents(Number(group_id));
+    }, [group_id, fetchAttendance, fetchStudents])
+  );
 
   useEffect(() => {
     getDates();
-  }, [attendance]);
+  }, [attendance, getDates]);
 
   const handleCheck = (id: number) => {
     const updatedStudents = listedStudents.map((student) =>
@@ -93,18 +91,18 @@ const ShowAttendance = () => {
     router.back();
   };
 
-  const handleAdd = async () => {
+  const handleCreate = async () => {
     const todaysDate = new Date().toISOString().split("T")[0];
     Alert.alert(
       "Confirm",
-      `Are you sure you want to add attendance for ${groupStudents.length} students?`,
+      `Are you sure you want to create attendance for ${groupStudents.length} students?`,
       [
         {
           text: "Cancel",
           style: "cancel",
         },
         {
-          text: "Add",
+          text: "Create",
           onPress: async () => {
             groupStudents.forEach((student) => {
               addAttendance(todaysDate, Number(group_id), student.id, false);
@@ -114,33 +112,37 @@ const ShowAttendance = () => {
         },
       ]
     );
+    router.back();
   };
 
-  const openWhatsApp = (studentName: string) => {
-    Alert.alert("WhatsApp", `Open WhatsApp for ${studentName}`);
-    // Add your logic to open WhatsApp for the student
-  };
+  const renderStudent = ({ item }: { item: any }) => {
+    const student = groupStudents.find(
+      (student) => student.id === item.student_id
+    );
+    const parentPhone = student?.parent_phone || "";
+    const whatsAppMessage = `الطالب ${student?.name} لم يحضر الحصة اليوم`;
 
-  const renderStudent = ({ item }: { item: any }) => (
-    <View style={styles.studentContainer}>
-      <TouchableOpacity
-        onPress={() => openWhatsApp(item.name)}
-      >
-        <FontAwesome
-          name="whatsapp"
-          size={24}
-          color={item.checked ? "gray" : "green"}
+    return (
+      <View style={styles.studentContainer}>
+        <TouchableOpacity
+          onPress={() => openWhatsApp(parentPhone, whatsAppMessage)}
+        >
+          <FontAwesome
+            name="whatsapp"
+            size={24}
+            color={item.checked ? "gray" : "green"}
+          />
+        </TouchableOpacity>
+        <Text style={styles.studentName}>{student?.name}</Text>
+        <Text>{parentPhone}</Text>
+        <Checkbox
+          value={item.checked ? true : false}
+          onValueChange={() => handleCheck(item.id)}
+          color={item.checked ? "#000" : undefined}
         />
-      </TouchableOpacity>
-      <Text style={styles.studentName}>
-        {groupStudents.find((student) => student.id === item.student_id)?.name}
-      </Text>
-      <Checkbox
-        value={item.checked? true : false}
-        onValueChange={() => handleCheck(item.id)}
-      />
-    </View>
-  );
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -164,8 +166,8 @@ const ShowAttendance = () => {
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Save</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-        <Text style={styles.saveButtonText}>Add</Text>
+      <TouchableOpacity style={styles.addButton} onPress={handleCreate}>
+        <Text style={styles.saveButtonText}>Create Attendance Sheet</Text>
       </TouchableOpacity>
     </View>
   );
@@ -178,8 +180,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 20,
     marginBottom: 16,
     textAlign: "center",
   },
