@@ -108,11 +108,11 @@ const ShowAttendance = () => {
               addAttendance(todaysDate, Number(group_id), student.id, false);
             });
             fetchAttendance(Number(group_id));
+            router.back();
           },
         },
       ]
     );
-    router.back();
   };
 
   const renderStudent = ({ item }: { item: any }) => {

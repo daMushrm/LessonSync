@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 16,
     marginBottom: 10,
-    borderWidth: 2,
   },
   cardTitle: {
     fontSize: 18,
