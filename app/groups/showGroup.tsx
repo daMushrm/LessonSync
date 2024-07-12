@@ -132,7 +132,7 @@ const ShowGroup = () => {
 
         <TouchableOpacity
           style={styles.payButton}
-          onPress={() => router.push("/paying/showPaying")}
+          onPress={() => router.push("/paying/showPaying?group_id=" + group_id)}
         >
           <Text style={styles.payButtonText}>Paying</Text>
         </TouchableOpacity>

@@ -10,6 +10,7 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { updateStudent, deleteStudent } from "@/sqlite/students";
 import { deleteAttendanceByStudentId } from "@/sqlite/attendance";
+import { deletePayingByStudentId } from "@/sqlite/paying";
 
 const EditStudent = () => {
   const {
@@ -50,6 +51,7 @@ const EditStudent = () => {
     try {
       await deleteStudent(Number(id));
       await deleteAttendanceByStudentId(Number(id));
+      deletePayingByStudentId(Number(id));
       Alert.alert("Success", "Student deleted successfully!");
       router.back();
     } catch (error) {

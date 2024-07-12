@@ -125,7 +125,6 @@ const ShowAttendance = () => {
     <View style={styles.studentContainer}>
       <TouchableOpacity
         onPress={() => openWhatsApp(item.name)}
-        disabled={item.checked}
       >
         <FontAwesome
           name="whatsapp"
@@ -137,7 +136,7 @@ const ShowAttendance = () => {
         {groupStudents.find((student) => student.id === item.student_id)?.name}
       </Text>
       <Checkbox
-        value={item.checked}
+        value={item.checked? true : false}
         onValueChange={() => handleCheck(item.id)}
       />
     </View>

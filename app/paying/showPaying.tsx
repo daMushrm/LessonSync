@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,63 +10,148 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
-
-const studentsData = [
-  { id: "1", name: "Student 1", checked: false },
-  { id: "2", name: "Student 2", checked: false },
-  { id: "3", name: "Student 3", checked: false },
-];
-
-const monthsData = [
-  { label: "Jan", value: "01" },
-  { label: "Feb", value: "02" },
-  { label: "Mar", value: "03" },
-  { label: "Apr", value: "04" },
-  { label: "May", value: "05" },
-  { label: "Jun", value: "06" },
-  { label: "Jul", value: "07" },
-  { label: "Aug", value: "08" },
-  { label: "Sep", value: "09" },
-  { label: "Oct", value: "10" },
-  { label: "Nov", value: "11" },
-  { label: "Dec", value: "12" },
-];
-
-const yearsData = [
-  { label: "2024", value: "2024" },
-  { label: "2025", value: "2025" },
-  { label: "2026", value: "2026" },
-];
+import { router, useLocalSearchParams } from "expo-router";
+import { getStudentsByGroupId } from "@/sqlite/students";
+import {
+  addPayment,
+  createPaymentTables,
+  getPaymentByGroupId,
+  updatePayment,
+} from "@/sqlite/paying";
 
 const ShowPaying = () => {
-  const [students, setStudents] = useState(studentsData);
-  const [selectedMonth, setSelectedMonth] = useState(monthsData[0].value);
-  const [selectedYear, setSelectedYear] = useState(yearsData[0].value);
+  const { group_id } = useLocalSearchParams();
+  const [listedStudents, setListedStudents] = useState<
+    { id: number; name: string; checked: boolean; student_id: number }[]
+  >([]);
+  const [selectedMonth, setSelectedMonth] = useState<string>("January");
+  const [selectedYear, setSelectedYear] = useState<string>("2024");
+  const [payments, setPayments] = useState<any[]>([]);
+  const [groupStudents, setGroupStudents] = useState<any[]>([]);
 
-  const handleCheck = (id: string) => {
-    const updatedStudents = students.map((student) =>
-      student.id === id ? { ...student, checked: !student.checked } : student
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const years = ["2024", "2025", "2026"];
+
+  const fetchPayments = useCallback(async (groupId: number) => {
+    try {
+      const result = await getPaymentByGroupId(groupId);
+      setPayments(result);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      Alert.alert("Error", "Failed to fetch payments. Please try again.");
+    }
+  }, []);
+
+  const fetchStudents = useCallback(async (groupId: number) => {
+    try {
+      const students = await getStudentsByGroupId(groupId);
+      setGroupStudents(students);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      Alert.alert("Error", "Failed to fetch students. Please try again.");
+    }
+  }, []);
+
+  useEffect(() => {
+    const initializeComponent = async () => {
+      await createPaymentTables();
+      const groupIdNumber = Number(group_id);
+      await fetchPayments(groupIdNumber);
+      await fetchStudents(groupIdNumber);
+    };
+
+    initializeComponent();
+  }, [group_id, fetchPayments, fetchStudents]);
+
+  useEffect(() => {
+    const filteredPayments = payments.filter(
+      (record) =>
+        record.group_id === Number(group_id) &&
+        record.month === selectedMonth &&
+        record.year === selectedYear
     );
-    setStudents(updatedStudents);
-  };
 
-  const handleSave = () => {
-    // Add your logic to save the data to your backend or storage
-    students.filter((student) => !student.checked);
-    router.back();
-  };
+    setListedStudents(
+      groupStudents.map((student) => {
+        const paymentRecord = filteredPayments.find(
+          (record) => record.student_id === student.id
+        );
+        return {
+          id: paymentRecord ? paymentRecord.id : student.id,
+          name: student.name,
+          checked: paymentRecord ? paymentRecord.paid : false,
+          student_id: student.id,
+        };
+      })
+    );
+  }, [payments, groupStudents, selectedMonth, selectedYear, group_id]);
 
-  const openWhatsApp = (studentName: string) => {
+  const handleCheck = useCallback((id: number) => {
+    setListedStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.id === id ? { ...student, checked: !student.checked } : student
+      )
+    );
+  }, []);
+
+  const handleChangeDate = useCallback((month: string, year: string) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    try {
+      await Promise.all(
+        listedStudents.map(async (student) => {
+          const existingRecord = payments.find(
+            (record) =>
+              record.month === selectedMonth &&
+              record.year === selectedYear &&
+              record.student_id === student.student_id
+          );
+          if (existingRecord) {
+            await updatePayment(existingRecord.id, student.checked);
+          } else {
+            await addPayment(
+              selectedMonth,
+              selectedYear,
+              Number(group_id),
+              student.student_id,
+              student.checked
+            );
+          }
+        })
+      );
+      router.back();
+    } catch (error) {
+      console.error("Error saving payments:", error);
+      Alert.alert("Error", "Failed to save payments. Please try again.");
+    }
+  }, [listedStudents, payments, selectedMonth, selectedYear, group_id]);
+
+  const openWhatsApp = useCallback((studentName: string) => {
     Alert.alert("WhatsApp", `Open WhatsApp for ${studentName}`);
     // Add your logic to open WhatsApp for the student
-  };
+  }, []);
 
   const renderStudent = ({ item }: { item: any }) => (
     <View style={styles.studentContainer}>
       <TouchableOpacity
         onPress={() => openWhatsApp(item.name)}
-        disabled={item.checked ? true : false}
       >
         <FontAwesome
           name="whatsapp"
@@ -74,9 +159,11 @@ const ShowPaying = () => {
           color={item.checked ? "gray" : "green"}
         />
       </TouchableOpacity>
-      <Text style={styles.studentName}>{item.name}</Text>
+      <Text style={styles.studentName}>
+        {groupStudents.find((student) => student.id === item.student_id)?.name}
+      </Text>
       <Checkbox
-        value={item.checked}
+        value={item.checked? true : false}
         onValueChange={() => handleCheck(item.id)}
       />
     </View>
@@ -84,39 +171,35 @@ const ShowPaying = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose Paying Month</Text>
+      <Text style={styles.title}>Choose Paying Month and Year</Text>
       <View style={styles.pickersContainer}>
         <Picker
           selectedValue={selectedMonth}
-          onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+          onValueChange={(itemValue) =>
+            handleChangeDate(itemValue, selectedYear)
+          }
           style={styles.picker}
         >
-          {monthsData.map((month) => (
-            <Picker.Item
-              key={month.value}
-              label={month.label}
-              value={month.value}
-            />
+          {months.map((month) => (
+            <Picker.Item key={month} label={month} value={month} />
           ))}
         </Picker>
         <Picker
           selectedValue={selectedYear}
-          onValueChange={(itemValue) => setSelectedYear(itemValue)}
+          onValueChange={(itemValue) =>
+            handleChangeDate(selectedMonth, itemValue)
+          }
           style={styles.picker}
         >
-          {yearsData.map((year) => (
-            <Picker.Item
-              key={year.value}
-              label={year.label}
-              value={year.value}
-            />
+          {years.map((year) => (
+            <Picker.Item key={year} label={year} value={year} />
           ))}
         </Picker>
       </View>
 
       <FlatList
-        data={students}
-        keyExtractor={(item) => item.id}
+        data={listedStudents}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderStudent}
         contentContainerStyle={styles.listContainer}
       />
@@ -166,11 +249,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   saveButton: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
     backgroundColor: "#000",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 16,
   },
   saveButtonText: {
     color: "#fff",
