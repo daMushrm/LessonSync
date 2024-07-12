@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { addStudent } from "@/sqlite/students";
+import showToast from "@/components/showToast";
 
 const AddStudent = () => {
   const { group_id } = useLocalSearchParams();
@@ -24,8 +25,8 @@ const AddStudent = () => {
 
     try {
       await addStudent(name, phone, parentPhone, Number(group_id));
-      Alert.alert("Success", "Student added successfully!");
-      router.push("/groups/showGroup?group_id=" + group_id + "&refresh=true");
+      showToast("Added successfully");
+      router.replace("..");
     } catch (error) {
       Alert.alert("Error", "Failed to add student. Please try again.");
       console.error("Error adding student:", error);

@@ -19,6 +19,8 @@ import {
   updateAttendance,
 } from "@/sqlite/attendance";
 import openWhatsApp from "@/components/openWhatsApp";
+import Toast from "react-native-toast-message";
+import showToast from "@/components/showToast";
 
 const ShowAttendance = () => {
   const { group_id } = useLocalSearchParams();
@@ -88,6 +90,7 @@ const ShowAttendance = () => {
     listedStudents.forEach((student) => {
       updateAttendance(student.id, student.checked);
     });
+    showToast("Saved successfully");
     router.back();
   };
 
@@ -108,6 +111,7 @@ const ShowAttendance = () => {
               addAttendance(todaysDate, Number(group_id), student.id, false);
             });
             fetchAttendance(Number(group_id));
+            showToast("Created Successfully");
             router.back();
           },
         },

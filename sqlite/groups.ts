@@ -95,6 +95,24 @@ const updateGroup = async (
   }
 };
 
+const deleteGroup = async (id: number): Promise<void> => {
+  try {
+    const db = await openGroupsAsync();
+    await db.runAsync(
+      `
+      DELETE FROM groups WHERE id = ?;
+      DELETE FROM students WHERE group_id = ?;
+      DELETE FROM attendance WHERE group_id = ?;
+      DELETE FROM payment WHERE group_id = ?;
+    `,
+      [id, id, id, id]
+    );
+    console.log("Group deleted");
+  } catch (error) {
+    console.error("Error in deleteGroup:", error);
+  }
+};
+
 export {
   createGroupTables,
   getAllGroups,
@@ -102,6 +120,7 @@ export {
   updateGroup,
   getGroupById,
   getGroupsByDay,
+  deleteGroup,
 };
 
 export interface Group {

@@ -18,6 +18,7 @@ import {
   getPaymentByGroupId,
   updatePayment,
 } from "@/sqlite/paying";
+import showToast from "@/components/showToast";
 
 const ShowPaying = () => {
   const { group_id } = useLocalSearchParams();
@@ -136,6 +137,7 @@ const ShowPaying = () => {
           }
         })
       );
+      showToast("Saved successfully")
       router.back();
     } catch (error) {
       console.error("Error saving payments:", error);
@@ -150,9 +152,7 @@ const ShowPaying = () => {
 
   const renderStudent = ({ item }: { item: any }) => (
     <View style={styles.studentContainer}>
-      <TouchableOpacity
-        onPress={() => openWhatsApp(item.name)}
-      >
+      <TouchableOpacity onPress={() => openWhatsApp(item.name)}>
         <FontAwesome
           name="whatsapp"
           size={24}
@@ -163,8 +163,9 @@ const ShowPaying = () => {
         {groupStudents.find((student) => student.id === item.student_id)?.name}
       </Text>
       <Checkbox
-        value={item.checked? true : false}
+        value={item.checked ? true : false}
         onValueChange={() => handleCheck(item.id)}
+        color={item.checked ? "#000" : undefined}
       />
     </View>
   );
@@ -217,8 +218,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 20,
     marginBottom: 16,
     textAlign: "center",
   },

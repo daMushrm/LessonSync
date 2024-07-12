@@ -52,7 +52,7 @@ const EditStudent = () => {
     try {
       await deleteStudent(Number(id));
       showToast("Deleted successfully");
-      router.back();
+      router.replace("..");
     } catch (error) {
       console.error("Error deleting student:", error);
       Alert.alert("Error", "There was a problem deleting the student.");

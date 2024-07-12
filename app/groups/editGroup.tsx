@@ -10,7 +10,8 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
-import { updateGroup } from "@/sqlite/groups";
+import { deleteGroup, updateGroup } from "@/sqlite/groups";
+import showToast from "@/components/showToast";
 
 const EditGroup = () => {
   const {
@@ -39,8 +40,8 @@ const EditGroup = () => {
       return;
     }
     try {
-      await updateGroup(Number(id), name, day, time); // Ensure 'time' is passed directly as string
-      Alert.alert("Success", "Group updated successfully!");
+      await updateGroup(Number(id), name, day, time);
+      showToast("Saved successfully");
       router.back();
     } catch (error) {
       console.error("Error updating group:", error);
@@ -65,6 +66,35 @@ const EditGroup = () => {
     });
     setTime(formattedTime);
     hideTimePicker();
+  };
+
+  const handleDeleteGroup = async () => {
+    try {
+      await deleteGroup(Number(id));
+      showToast("Deleted successfully");
+      router.replace("/");
+    } catch (error) {
+      console.error("Error deleting group:", error);
+      Alert.alert("Error", "There was a problem deleting the group.");
+    }
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this Group?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: handleDeleteGroup,
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   return (
@@ -105,6 +135,9 @@ const EditGroup = () => {
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSaveGroup}>
         <Text style={styles.saveButtonText}>Save Changes</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
+        <Text style={styles.deleteButtonText}>Delete Group</Text>
       </TouchableOpacity>
     </View>
   );
@@ -149,6 +182,19 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  deleteButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 5,
+    borderBottomColor: "red",
+  },
+  deleteButtonText: {
+    color: "red",
+    fontSize: 18,
   },
 });
 

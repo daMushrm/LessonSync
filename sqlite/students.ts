@@ -63,7 +63,7 @@ const deleteStudent = async (id: number): Promise<void> => {
     const db = await openStudentsAsync();
     await db.runAsync(
       `
-      DELETE FROM students WHERE id = ?
+      DELETE FROM students WHERE id = ?;
       DELETE FROM attendance WHERE student_id = ?;
       DELETE FROM payment WHERE student_id = ?;
     `,
