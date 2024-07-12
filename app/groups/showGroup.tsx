@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { Feather, FontAwesome } from "@expo/vector-icons";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { getStudentsByGroupId } from "@/sqlite/students";
 import { getGroupById } from "@/sqlite/groups";
@@ -17,9 +17,7 @@ const ShowGroup = () => {
   const [groupName, setGroupName] = useState("");
   const [day, setDay] = useState("");
   const [time, setTime] = useState("12:00 PM");
-  const [students, setStudents] = useState<
-    { id: number; name: string; phone: string; parent_phone: string }[]
-  >([]);
+  const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const getGroup = async () => {
@@ -67,26 +65,22 @@ const ShowGroup = () => {
     );
   };
 
-  const renderStudent = ({
-    item,
-  }: {
-    item: { id: number; name: string; phone: string; parent_phone: string };
-  }) => (
-    <View style={styles.studentContainer}>
+  const renderStudent = ({ item }: { item: any }) => (
+    <View style={styles.studentItem}>
       <Text style={styles.studentName}>{item.name}</Text>
       <TouchableOpacity
         onPress={() =>
           handleStudentPress(item.id, item.name, item.phone, item.parent_phone)
         }
       >
-        <FontAwesome name="pencil" size={20} color="black" />
+        <FontAwesome name="pencil-square" size={20} color="black" />
       </TouchableOpacity>
     </View>
   );
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
@@ -94,24 +88,23 @@ const ShowGroup = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{groupName}</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>Day:</Text>
-        <Text style={styles.text}>{day}</Text>
+      <View style={styles.header}>
+        <Text style={styles.groupName}>• {groupName}</Text>
+        <TouchableOpacity onPress={handleEditGroup}>
+          <FontAwesome name="pencil-square" size={24} color="black" />
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Time:</Text>
-        <Text style={styles.text}>{time}</Text>
+      <View style={styles.timeContainer}>
+        <Feather name="clock" size={24} color="black" />
+        <Text style={styles.timeText}>{`${day}, ${time}`}</Text>
       </View>
 
-      <TouchableOpacity style={styles.editButton} onPress={handleEditGroup}>
-        <Text style={styles.editButtonText}>Edit Group</Text>
-      </TouchableOpacity>
+      <View style={styles.studentHeaderContainer}>
+        <Text style={styles.studentsHeader}>Students</Text>
+      </View>
 
       <View style={styles.studentsSection}>
-        <Text style={styles.studentsHeader}>Students:</Text>
         <FlatList
           data={students}
           keyExtractor={(item) => item.id.toString()}
@@ -120,7 +113,7 @@ const ShowGroup = () => {
         />
       </View>
 
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.attButton}
           onPress={() =>
@@ -131,10 +124,10 @@ const ShowGroup = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.payButton}
+          style={styles.payingButton}
           onPress={() => router.push("/paying/showPaying?group_id=" + group_id)}
         >
-          <Text style={styles.payButtonText}>Paying</Text>
+          <Text style={styles.payingButtonText}>Paying</Text>
         </TouchableOpacity>
       </View>
 
@@ -148,57 +141,78 @@ const ShowGroup = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
-    padding: 16,
+    backgroundColor: "#fff",
+  },
+  loaderContainer: {
+    flex: 1,
     justifyContent: "center",
+    alignItems: "center",
   },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
+    paddingHorizontal: 16,
+
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+    marginTop: 60,
+    marginLeft: 8,
   },
-  section: {
+  groupName: {
+    fontSize: 28,
+  },
+  timeContainer: {
+    paddingHorizontal: 16,
+
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 30,
+    marginLeft: 8,
+    opacity: 0.7,
   },
-  label: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginRight: 8,
+  timeText: {
+    marginLeft: 8,
+    fontSize: 16,
   },
-  text: {
-    fontSize: 18,
-  },
-  studentsSection: {
-    flex: 1,
-    marginTop: 20,
+  studentHeaderContainer: {
+    backgroundColor: "black",
+    padding: 10,
+    marginBottom: 10,
   },
   studentsHeader: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 12,
+    color: "white",
+    padding: 10,
+    textAlign: "center",
+  },
+  studentsSection: {
+    paddingHorizontal: 16,
+
+    flex: 1,
+    backgroundColor: "#fff",
   },
   studentsContainer: {
-    paddingBottom: 80,
+    paddingBottom: 16,
   },
-  studentContainer: {
+  studentItem: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 10,
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: "#e0e0e0",
   },
   studentName: {
-    flex: 1,
-    marginLeft: 10,
     fontSize: 16,
   },
-  buttonContainer: {
+  buttonsContainer: {
+    paddingHorizontal: 16,
+
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginTop: 16,
   },
   attButton: {
     flex: 1,
@@ -215,7 +229,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  payButton: {
+  payingButton: {
     flex: 1,
     backgroundColor: "#fff",
     borderColor: "#000",
@@ -224,34 +238,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
-  payButtonText: {
+  payingButtonText: {
     color: "#000",
     fontSize: 18,
     fontWeight: "bold",
   },
   addButton: {
+    margin: 16,
     backgroundColor: "#000",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 10,
   },
   addButtonText: {
     color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  editButton: {
-    backgroundColor: "#fff",
-    borderColor: "#000",
-    borderWidth: 1,
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  editButtonText: {
-    color: "#000",
     fontSize: 18,
     fontWeight: "bold",
   },
