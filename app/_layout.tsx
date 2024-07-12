@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import 'expo-dev-client';
+import "expo-dev-client";
 
 export default function RootLayout() {
   return (
@@ -7,6 +7,7 @@ export default function RootLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="groups/addGroup" options={{ title: "Add Group" }} />
       <Stack.Screen name="groups/showGroup" options={{ headerShown: false }} />
+      <Stack.Screen name="groups/editGroup" options={{ title: "Edit Group" }} />
       <Stack.Screen
         name="students/addStudent"
         options={{ title: "Add Student" }}
@@ -19,10 +20,7 @@ export default function RootLayout() {
         name="attendance/showAttendance"
         options={{ title: "Attendance" }}
       />
-      <Stack.Screen
-        name="paying/showPaying"
-        options={{ title: "Paying" }}
-      />
+      <Stack.Screen name="paying/showPaying" options={{ title: "Paying" }} />
     </Stack>
   );
 }
