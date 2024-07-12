@@ -1,7 +1,7 @@
 import { Linking, Alert } from "react-native";
 
 const openWhatsApp = (phoneNumber: string, message: string) => {
-  const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+  const url = `https://wa.me/2${phoneNumber}?text=${encodeURIComponent(
     message
   )}`;
   try {

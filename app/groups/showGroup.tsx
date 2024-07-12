@@ -73,7 +73,7 @@ const ShowGroup = () => {
           handleStudentPress(item.id, item.name, item.phone, item.parent_phone)
         }
       >
-        <FontAwesome name="pencil-square" size={20} color="black" />
+        <FontAwesome name="pencil" size={20} color="black" />
       </TouchableOpacity>
     </View>
   );
@@ -91,7 +91,7 @@ const ShowGroup = () => {
       <View style={styles.header}>
         <Text style={styles.groupName}>• {groupName}</Text>
         <TouchableOpacity onPress={handleEditGroup}>
-          <FontAwesome name="pencil-square" size={24} color="black" />
+          <FontAwesome name="pencil" size={24} color="black" />
         </TouchableOpacity>
       </View>
 

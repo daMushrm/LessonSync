@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { getGroupsByDay } from "@/sqlite/groups";
 import GroupCard from "@/components/Card";
+import { useFocusEffect } from "expo-router";
 
 const welcomePhrases = [
   "Let's dive into today's teaching!",
@@ -17,17 +18,21 @@ const Index = () => {
 
   const name = "Tarek"; // This could be dynamic, fetched from user profile
 
-  useEffect(() => {
-    const fetchTodaysGroups = async () => {
-      const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
-      const groups = await getGroupsByDay(today);
-      setTodaysGroups(groups);
-    };
-    fetchTodaysGroups();
-    setWelcomePhrase(
-      welcomePhrases[Math.floor(Math.random() * welcomePhrases.length)]
-    );
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTodaysGroups = async () => {
+        const today = new Date().toLocaleDateString("en-US", {
+          weekday: "long",
+        });
+        const groups = await getGroupsByDay(today);
+        setTodaysGroups(groups);
+      };
+      fetchTodaysGroups();
+      setWelcomePhrase(
+        welcomePhrases[Math.floor(Math.random() * welcomePhrases.length)]
+      );
+    }, [])
+  );
 
   return (
     <View style={styles.container}>

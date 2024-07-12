@@ -120,7 +120,8 @@ const ShowAttendance = () => {
       (student) => student.id === item.student_id
     );
     const parentPhone = student?.parent_phone || "";
-    const whatsAppMessage = `الطالب ${student?.name} لم يحضر الحصة اليوم`;
+    const whatsAppMessage = `الطالب ${student?.name} لم يحضر الحصة اليوم
+    بتاريخ ${selectedDate}`;
 
     return (
       <View style={styles.studentContainer}>
@@ -134,7 +135,6 @@ const ShowAttendance = () => {
           />
         </TouchableOpacity>
         <Text style={styles.studentName}>{student?.name}</Text>
-        <Text>{parentPhone}</Text>
         <Checkbox
           value={item.checked ? true : false}
           onValueChange={() => handleCheck(item.id)}
