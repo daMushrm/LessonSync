@@ -34,6 +34,19 @@ const getAllGroups = async (): Promise<Group[]> => {
   }
 };
 
+const getGroupById = async (id: number): Promise<Group | undefined> => {
+  try {
+    const db = await openGroupsAsync();
+    const allRows = await db.getAllAsync("SELECT * FROM groups WHERE id = ?", [
+      id,
+    ]);
+    return allRows[0] as any;
+  } catch (error) {
+    console.error("Error in getGroupById:", error);
+    return undefined;
+  }
+};
+
 const addGroup = async (
   name: string,
   day: string,
@@ -59,19 +72,17 @@ const updateGroup = async (
 ): Promise<void> => {
   try {
     const db = await openGroupsAsync();
-    await db.runAsync("UPDATE groups SET name = ?, day = ?, time = ? WHERE id = ?", [
-      name,
-      day,
-      time,
-      id,
-    ]);
+    await db.runAsync(
+      "UPDATE groups SET name = ?, day = ?, time = ? WHERE id = ?",
+      [name, day, time, id]
+    );
     console.log("Group updated");
   } catch (error) {
     console.error("Error in updateGroup:", error);
   }
 };
 
-export { createGroupTables, getAllGroups, addGroup, updateGroup };
+export { createGroupTables, getAllGroups, addGroup, updateGroup, getGroupById };
 
 export interface Group {
   id: number;

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "@/components/Card";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { Group, createGroupTables, getAllGroups } from "@/sqlite/groups";
 
 const AllGroups = () => {
@@ -22,11 +22,14 @@ const AllGroups = () => {
     if (refresh) {
       void refreshData();
     }
-
-    createGroupTables();
-    fetchGroups();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      createGroupTables();
+      fetchGroups();
+    }, [])
+  );
   return (
     <View style={styles.container}>
       <Text style={styles.title}>All Groups</Text>
@@ -34,18 +37,7 @@ const AllGroups = () => {
         <Card
           key={item.id}
           text={item.name}
-          onPress={() =>
-            router.push(
-              "/groups/showGroup?group_id=" +
-                item.id +
-                "&group_name=" +
-                item.name +
-                "&group_day=" +
-                item.day +
-                "&group_time=" +
-                item.time
-            )
-          }
+          onPress={() => router.push("/groups/showGroup?group_id=" + item.id)}
         />
       ))}
       <TouchableOpacity

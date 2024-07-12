@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,12 +8,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { createStudentTables, getStudentsByGroupId } from "@/sqlite/students";
+import { getGroupById } from "@/sqlite/groups";
 
 const ShowGroup = () => {
-  const { group_id, refresh, group_name, group_day, group_time } =
-    useLocalSearchParams();
+  const { group_id } = useLocalSearchParams();
   const [groupName, setGroupName] = useState("");
   const [day, setDay] = useState("");
   const [time, setTime] = useState("12:00 PM");
@@ -22,29 +22,29 @@ const ShowGroup = () => {
   >([]);
   const [loading, setLoading] = useState(true);
 
-  // refresh logic
-  const [data, setData] = useState<string>("");
-  const refreshData = () => setData("result");
-
-  useEffect(() => {
-    // refresh logic
-    if (refresh) {
-      void refreshData();
+  const getGroup = async () => {
+    if (group_id) {
+      const group = await getGroupById(Number(group_id));
+      setGroupName(group?.name || "");
+      setDay(group?.day || "");
+      setTime(group?.time || "");
     }
+  };
 
-    setGroupName(group_name?.toString() || "");
-    setDay(group_day?.toString() || "");
-    setTime(group_time?.toString() || "");
+  useFocusEffect(
+    useCallback(() => {
+      getGroup();
 
-    const fetchStudents = async () => {
-      if (group_id) {
-        const students = await getStudentsByGroupId(Number(group_id));
-        setStudents(students);
-        setLoading(false);
-      }
-    };
-    fetchStudents();
-  }, [group_id]);
+      const fetchStudents = async () => {
+        if (group_id) {
+          const students = await getStudentsByGroupId(Number(group_id));
+          setStudents(students);
+          setLoading(false);
+        }
+      };
+      fetchStudents();
+    }, [group_id])
+  );
 
   const handleAddStudent = () => {
     router.push("/students/addStudent?group_id=" + group_id);
@@ -63,7 +63,7 @@ const ShowGroup = () => {
 
   const handleEditGroup = () => {
     router.push(
-      `/groups/editGroup?id=${group_id}&name=${group_name}&day=${group_day}&time=${group_time}`
+      `/groups/editGroup?id=${group_id}&name=${groupName}&day=${day}&time=${time}`
     );
   };
 
