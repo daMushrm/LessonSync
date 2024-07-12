@@ -85,12 +85,23 @@ const updateStudent = async (
   }
 };
 
+// clear all students (temporary function for testing)
+const clearStudentsTable = async (): Promise<void> => {
+  try {
+    const db = await openStudentsAsync();
+    await db.runAsync("DELETE FROM students");
+  } catch (error) {
+    console.error("Error in clearStudentsTable:", error);
+  }
+};
+
 export {
   createStudentTables,
   addStudent,
   getStudentsByGroupId,
   deleteStudent,
   updateStudent,
+  clearStudentsTable,
 };
 
 export interface Student {

@@ -88,7 +88,7 @@ const getAttendanceByGroupId = async (
   }
 };
 
-// Clear the attendance table
+// Clear the attendance table (temporary function for testing)
 const clearAttendanceTable = async (): Promise<void> => {
   try {
     const db = await openAttendanceAsync();

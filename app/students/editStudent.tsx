@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { updateStudent, deleteStudent } from "@/sqlite/students";
+import { deleteAttendanceByStudentId } from "@/sqlite/attendance";
 
 const EditStudent = () => {
   const {
@@ -48,6 +49,7 @@ const EditStudent = () => {
   const handleDeleteStudent = async () => {
     try {
       await deleteStudent(Number(id));
+      await deleteAttendanceByStudentId(Number(id));
       Alert.alert("Success", "Student deleted successfully!");
       router.back();
     } catch (error) {
