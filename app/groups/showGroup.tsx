@@ -62,6 +62,12 @@ const ShowGroup = () => {
     );
   };
 
+  const handleEditGroup = () => {
+    router.push(
+      `/groups/editGroup?id=${group_id}&name=${group_name}&day=${group_day}&time=${group_time}`
+    );
+  };
+
   const renderStudent = ({
     item,
   }: {
@@ -100,6 +106,10 @@ const ShowGroup = () => {
         <Text style={styles.label}>Time:</Text>
         <Text style={styles.text}>{time}</Text>
       </View>
+
+      <TouchableOpacity style={styles.editButton} onPress={handleEditGroup}>
+        <Text style={styles.editButtonText}>Edit Group</Text>
+      </TouchableOpacity>
 
       <View style={styles.studentsSection}>
         <Text style={styles.studentsHeader}>Students:</Text>
@@ -227,6 +237,20 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  editButton: {
+    backgroundColor: "#fff",
+    borderColor: "#000",
+    borderWidth: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  editButtonText: {
+    color: "#000",
     fontSize: 18,
     fontWeight: "bold",
   },

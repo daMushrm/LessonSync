@@ -19,7 +19,6 @@ const createStudentTables = async (): Promise<void> => {
         FOREIGN KEY (group_id) REFERENCES groups(id)
       );
     `);
-    console.log("Student tables created");
   } catch (error) {
     console.error("Error in createStudentTables:", error);
   }
@@ -53,7 +52,6 @@ const addStudent = async (
       "INSERT INTO students (name, phone, parent_phone, group_id) VALUES (?, ?, ?, ?)",
       [name, phone, parent_phone, group_id]
     );
-    console.log("Student added");
   } catch (error) {
     console.error("Error in addStudent:", error);
   }
@@ -64,7 +62,6 @@ const deleteStudent = async (id: number): Promise<void> => {
   try {
     const db = await openStudentsAsync();
     await db.runAsync("DELETE FROM students WHERE id = ?", [id]);
-    console.log("Student deleted");
   } catch (error) {
     console.error("Error in deleteStudent:", error);
   }
@@ -83,7 +80,6 @@ const updateStudent = async (
       "UPDATE students SET name = ?, phone = ?, parent_phone = ? WHERE id = ?",
       [name, phone, parent_phone, id]
     );
-    console.log("Student updated");
   } catch (error) {
     console.error("Error in updateStudent:", error);
   }

@@ -9,31 +9,43 @@ import {
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
-import { addGroup, createGroupTables } from "@/sqlite/groups";
+import { router, useLocalSearchParams } from "expo-router";
+import { updateGroup } from "@/sqlite/groups";
 
-const AddGroup = () => {
+const EditGroup = () => {
+  const {
+    id: groupId,
+    name: initialName,
+    day: initialDay,
+    time: initialTime,
+  } = useLocalSearchParams();
+
+  const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [day, setDay] = useState("Monday");
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState("12:00 PM"); // Initialize with a default time format
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   useEffect(() => {
-    createGroupTables();
-  }, []);
+    setId(groupId?.toString() || "");
+    setName(initialName?.toString() || "");
+    setDay(initialDay?.toString() || "Monday");
+    setTime(initialTime?.toString() || "12:00 PM"); // Set initial time format
+  }, [initialName, initialDay, initialTime]);
 
   const handleSaveGroup = async () => {
-    if (!name.trim() || !day || !time) {
+    if (!name.trim() || !day.trim() || !time.trim()) {
       Alert.alert("Error", "Please fill out all fields.");
       return;
     }
-    const formattedTime = time.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-    await addGroup(name, day, formattedTime);
-    router.back();
+    try {
+      await updateGroup(Number(id), name, day, time); // Ensure 'time' is passed directly as string
+      Alert.alert("Success", "Group updated successfully!");
+      router.back();
+    } catch (error) {
+      console.error("Error updating group:", error);
+      Alert.alert("Error", "There was a problem updating the group.");
+    }
   };
 
   const showTimePicker = () => {
@@ -45,7 +57,13 @@ const AddGroup = () => {
   };
 
   const handleTimeConfirm = (selectedTime: any) => {
-    setTime(selectedTime);
+    // Format the selected time as needed (e.g., "10:12 PM")
+    const formattedTime = selectedTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+    setTime(formattedTime);
     hideTimePicker();
   };
 
@@ -76,13 +94,7 @@ const AddGroup = () => {
 
       <Text style={styles.label}>Time:</Text>
       <TouchableOpacity style={styles.input} onPress={showTimePicker}>
-        <Text>
-          {time.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          })}
-        </Text>
+        <Text>{time}</Text>
       </TouchableOpacity>
       <DateTimePickerModal
         isVisible={isTimePickerVisible}
@@ -91,8 +103,8 @@ const AddGroup = () => {
         onCancel={hideTimePicker}
       />
 
-      <TouchableOpacity style={styles.addButton} onPress={handleSaveGroup}>
-        <Text style={styles.addButtonText}>Add Group</Text>
+      <TouchableOpacity style={styles.saveButton} onPress={handleSaveGroup}>
+        <Text style={styles.saveButtonText}>Save Changes</Text>
       </TouchableOpacity>
     </View>
   );
@@ -125,18 +137,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  addButton: {
+  saveButton: {
     backgroundColor: "#000",
     paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
   },
-  addButtonText: {
+  saveButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
 });
 
-export default AddGroup;
+export default EditGroup;

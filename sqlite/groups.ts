@@ -54,7 +54,27 @@ const addGroup = async (
   }
 };
 
-export { createGroupTables, getAllGroups, addGroup };
+const updateGroup = async (
+  id: number,
+  name: string,
+  day: string,
+  time: string
+): Promise<void> => {
+  try {
+    const db = await openGroupsAsync();
+    await db.runAsync("UPDATE groups SET name = ?, day = ?, time = ? WHERE id = ?", [
+      name,
+      day,
+      time,
+      id,
+    ]);
+    console.log("Group updated");
+  } catch (error) {
+    console.error("Error in updateGroup:", error);
+  }
+};
+
+export { createGroupTables, getAllGroups, addGroup, updateGroup };
 
 export interface Group {
   id: number;
