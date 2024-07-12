@@ -6,18 +6,21 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { useFocusEffect, useLocalSearchParams, router } from "expo-router";
+import { useFocusEffect, router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { Group, createGroupTables, getAllGroups } from "@/sqlite/groups";
 
 const GroupCard = ({ group }: any) => (
-  <View style={styles.card}>
+  <TouchableOpacity
+    style={styles.card}
+    onPress={() => router.push("/groups/showGroup?group_id=" + group.id)}
+  >
     <Text style={styles.cardTitle}>{group.name}</Text>
     <View style={styles.cardTimeContainer}>
       <Feather name="clock" size={16} color="gray" />
       <Text style={styles.cardTime}>Monday, 12:00 PM</Text>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 const AllGroups = () => {
