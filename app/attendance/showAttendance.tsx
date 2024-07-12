@@ -41,7 +41,13 @@ const ShowAttendance = () => {
       if (uniqueDates.length > 0) {
         setSelectedDate(uniqueDates[0]);
         setListedStudents(
-          attendance.filter((record) => record.date === uniqueDates[0])
+          // problem solved like a pro :D
+          attendance.map((record) => ({
+            id: record.id,
+            name: record.name,
+            checked: record.date === uniqueDates[0] && record.attended,
+            student_id: record.student_id,
+          }))
         );
       }
     } catch (error) {
