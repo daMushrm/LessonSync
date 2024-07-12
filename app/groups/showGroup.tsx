@@ -4,9 +4,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
-import Card from "@/components/Card";
+import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { createStudentTables, getStudentsByGroupId } from "@/sqlite/students";
 
@@ -16,7 +17,10 @@ const ShowGroup = () => {
   const [groupName, setGroupName] = useState("");
   const [day, setDay] = useState("");
   const [time, setTime] = useState("12:00 PM");
-  const [students, setStudents] = useState<{ id: number; name: string }[]>([]);
+  const [students, setStudents] = useState<
+    { id: number; name: string; phone: string; parent_phone: string }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
   // refresh logic
   const [data, setData] = useState<string>("");
@@ -37,6 +41,7 @@ const ShowGroup = () => {
         await createStudentTables();
         const students = await getStudentsByGroupId(Number(group_id));
         setStudents(students);
+        setLoading(false);
       }
     };
     fetchStudents();
@@ -46,9 +51,41 @@ const ShowGroup = () => {
     router.push("/students/addStudent?group_id=" + group_id);
   };
 
-  const handleStudentPress = (studentId: number) => {
-    router.push(`/students/editStudent?id=${studentId}`);
+  const handleStudentPress = (
+    studentId: number,
+    studentName: string,
+    studentPhone: string,
+    studentParentPhone: string
+  ) => {
+    router.push(
+      `/students/editStudent?id=${studentId}&name=${studentName}&phone=${studentPhone}&parentPhone=${studentParentPhone}`
+    );
   };
+
+  const renderStudent = ({
+    item,
+  }: {
+    item: { id: number; name: string; phone: string; parent_phone: string };
+  }) => (
+    <View style={styles.studentContainer}>
+      <Text style={styles.studentName}>{item.name}</Text>
+      <TouchableOpacity
+        onPress={() =>
+          handleStudentPress(item.id, item.name, item.phone, item.parent_phone)
+        }
+      >
+        <FontAwesome name="pencil" size={20} color="black" />
+      </TouchableOpacity>
+    </View>
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -66,16 +103,12 @@ const ShowGroup = () => {
 
       <View style={styles.studentsSection}>
         <Text style={styles.studentsHeader}>Students:</Text>
-        <ScrollView style={styles.studentsContainer}>
-          {students.map((student) => (
-            <TouchableOpacity
-              key={student.id}
-              onPress={() => handleStudentPress(student.id)}
-            >
-              <Card text={student.name} />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <FlatList
+          data={students}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderStudent}
+          contentContainerStyle={styles.studentsContainer}
+        />
       </View>
 
       <View style={styles.buttonContainer}>
@@ -136,12 +169,20 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   studentsContainer: {
-    maxHeight: 400,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
+    paddingBottom: 80,
+  },
+  studentContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  studentName: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: "row",

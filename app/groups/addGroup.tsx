@@ -28,7 +28,7 @@ const AddGroup = () => {
       return;
     }
     await addGroup(name, day, time.toLocaleTimeString());
-    router.back();
+    router.push("/allGroups?refresh=true");
   };
 
   const showTimePicker = () => {

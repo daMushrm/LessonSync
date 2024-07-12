@@ -29,7 +29,10 @@ const createStudentTables = async (): Promise<void> => {
 const getStudentsByGroupId = async (group_id: number): Promise<Student[]> => {
   try {
     const db = await openStudentsAsync();
-    const students = await db.getAllAsync("SELECT * FROM students WHERE group_id = ?", [group_id]);
+    const students = await db.getAllAsync(
+      "SELECT * FROM students WHERE group_id = ?",
+      [group_id]
+    );
     console.log("Students fetched:", students);
     return students as Student[];
   } catch (error) {
@@ -57,7 +60,43 @@ const addStudent = async (
   }
 };
 
-export { createStudentTables, addStudent, getStudentsByGroupId };
+// Delete a student by ID
+const deleteStudent = async (id: number): Promise<void> => {
+  try {
+    const db = await openStudentsAsync();
+    await db.runAsync("DELETE FROM students WHERE id = ?", [id]);
+    console.log("Student deleted");
+  } catch (error) {
+    console.error("Error in deleteStudent:", error);
+  }
+};
+
+// Update a student by ID
+const updateStudent = async (
+  id: number,
+  name: string,
+  phone: string,
+  parent_phone: string
+): Promise<void> => {
+  try {
+    const db = await openStudentsAsync();
+    await db.runAsync(
+      "UPDATE students SET name = ?, phone = ?, parent_phone = ? WHERE id = ?",
+      [name, phone, parent_phone, id]
+    );
+    console.log("Student updated");
+  } catch (error) {
+    console.error("Error in updateStudent:", error);
+  }
+};
+
+export {
+  createStudentTables,
+  addStudent,
+  getStudentsByGroupId,
+  deleteStudent,
+  updateStudent,
+};
 
 export interface Student {
   id: number;

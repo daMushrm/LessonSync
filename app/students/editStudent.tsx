@@ -7,40 +7,44 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import { updateStudent } from "@/sqlite/students";
 
 const EditStudent = () => {
   const {
+    id: studentId,
     name: initialName,
     phone: initialPhone,
     parentPhone: initialParentPhone,
   } = useLocalSearchParams();
-  const router = useRouter();
 
-  const [name, setName] = useState(initialName || "");
-  const [phone, setPhone] = useState(initialPhone || "");
-  const [parentPhone, setParentPhone] = useState(initialParentPhone || "");
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [parentPhone, setParentPhone] = useState("");
 
   useEffect(() => {
-    setName(initialName || "");
-    setPhone(initialPhone || "");
-    setParentPhone(initialParentPhone || "");
+    setId(studentId?.toString() || "");
+    setName(initialName?.toString() || "");
+    setPhone(initialPhone?.toString() || "");
+    setParentPhone(initialParentPhone?.toString() || "");
   }, [initialName, initialPhone, initialParentPhone]);
 
-  const handleSaveStudent = () => {
+  const handleSaveStudent = async () => {
     if (!name.trim() || !phone.trim() || !parentPhone.trim()) {
       Alert.alert("Error", "Please fill out all fields.");
       return;
     }
+    try {
+      await updateStudent(Number(id), name, phone, parentPhone);
+      Alert.alert("Success", "Student updated successfully!");
+      router.back();
+    } catch (error) {
+      console.error("Error updating student:", error);
+      Alert.alert("Error", "There was a problem updating the student.");
+    }
 
-    // Handle saving the edited student data here
-    console.log("Name:", name);
-    console.log("Phone:", phone);
-    console.log("Parent Phone:", parentPhone);
-    // Add your logic to save the data to your backend or storage
-
-    // Navigate back or to another screen
-    router.push("/students"); // Adjust the path based on your routing setup
+    router.back();
   };
 
   return (
