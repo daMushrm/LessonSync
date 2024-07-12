@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
@@ -19,8 +18,8 @@ import {
   updateAttendance,
 } from "@/sqlite/attendance";
 import openWhatsApp from "@/components/openWhatsApp";
-import Toast from "react-native-toast-message";
 import showToast from "@/components/showToast";
+import InfoModal from "@/components/attendance/InfoModal";
 
 const ShowAttendance = () => {
   const { group_id } = useLocalSearchParams();
@@ -31,6 +30,7 @@ const ShowAttendance = () => {
   const [attendance, setAttendance] = useState<any[]>([]);
   const [dates, setDates] = useState<string[]>([]);
   const [groupStudents, setGroupStudents] = useState<any[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const fetchAttendance = useCallback(async (groupId: number) => {
     const result = await getAttendanceByGroupId(groupId);
@@ -90,33 +90,28 @@ const ShowAttendance = () => {
     listedStudents.forEach((student) => {
       updateAttendance(student.id, student.checked);
     });
-    showToast("Saved successfully");
+    showToast("Saved Successfully");
     router.back();
   };
 
   const handleCreate = async () => {
     const todaysDate = new Date().toISOString().split("T")[0];
-    Alert.alert(
-      "Confirm",
-      `Are you sure you want to create attendance for ${groupStudents.length} students?`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Create",
-          onPress: async () => {
-            groupStudents.forEach((student) => {
-              addAttendance(todaysDate, Number(group_id), student.id, false);
-            });
-            fetchAttendance(Number(group_id));
-            showToast("Created Successfully");
-            router.back();
-          },
-        },
-      ]
-    );
+    setIsModalVisible(true);
+  };
+
+  const handleConfirmCreate = async () => {
+    setIsModalVisible(false);
+    const todaysDate = new Date().toISOString().split("T")[0];
+    groupStudents.forEach((student) => {
+      addAttendance(todaysDate, Number(group_id), student.id, false);
+    });
+    fetchAttendance(Number(group_id));
+    showToast("Created Successfully");
+    router.back();
+  };
+
+  const handleCancelCreate = () => {
+    setIsModalVisible(false);
   };
 
   const renderStudent = ({ item }: { item: any }) => {
@@ -175,6 +170,13 @@ const ShowAttendance = () => {
       <TouchableOpacity style={styles.addButton} onPress={handleCreate}>
         <Text style={styles.saveButtonText}>Create Attendance Sheet</Text>
       </TouchableOpacity>
+
+      <InfoModal
+        isVisible={isModalVisible}
+        message={`Are you sure you want to create attendance for ${groupStudents.length} students?`}
+        onConfirm={handleConfirmCreate}
+        onCancel={handleCancelCreate}
+      />
     </View>
   );
 };

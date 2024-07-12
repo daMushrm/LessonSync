@@ -12,6 +12,9 @@ import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { deleteGroup, updateGroup } from "@/sqlite/groups";
 import showToast from "@/components/showToast";
+import { deleteStudentsByGroupId } from "@/sqlite/students";
+import { deleteAttendanceByGroupId } from "@/sqlite/attendance";
+import { deletePaymentByGroupId } from "@/sqlite/paying";
 
 const EditGroup = () => {
   const {
@@ -41,7 +44,7 @@ const EditGroup = () => {
     }
     try {
       await updateGroup(Number(id), name, day, time);
-      showToast("Saved successfully");
+      showToast("Saved Successfully");
       router.back();
     } catch (error) {
       console.error("Error updating group:", error);
@@ -71,7 +74,10 @@ const EditGroup = () => {
   const handleDeleteGroup = async () => {
     try {
       await deleteGroup(Number(id));
-      showToast("Deleted successfully");
+      await deleteStudentsByGroupId(Number(id));
+      await deleteAttendanceByGroupId(Number(id));
+      await deletePaymentByGroupId(Number(id));
+      showToast("Deleted Successfully");
       router.replace("/");
     } catch (error) {
       console.error("Error deleting group:", error);

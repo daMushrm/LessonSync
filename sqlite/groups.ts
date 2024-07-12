@@ -101,9 +101,6 @@ const deleteGroup = async (id: number): Promise<void> => {
     await db.runAsync(
       `
       DELETE FROM groups WHERE id = ?;
-      DELETE FROM students WHERE group_id = ?;
-      DELETE FROM attendance WHERE group_id = ?;
-      DELETE FROM payment WHERE group_id = ?;
     `,
       [id, id, id, id]
     );

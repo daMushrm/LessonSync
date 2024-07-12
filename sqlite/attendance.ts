@@ -112,6 +112,16 @@ const deleteAttendanceByStudentId = async (
   }
 };
 
+// Delete attendance records by group ID
+const deleteAttendanceByGroupId = async (groupId: number): Promise<void> => {
+  try {
+    const db = await openAttendanceAsync();
+    await db.runAsync("DELETE FROM attendance WHERE group_id = ?", [groupId]);
+  } catch (error) {
+    console.error("Error in deleteAttendanceByGroupId:", error);
+  }
+};
+
 export {
   createAttendanceTables,
   addAttendance,
@@ -119,6 +129,7 @@ export {
   getAttendanceByGroupId,
   clearAttendanceTable,
   deleteAttendanceByStudentId,
+  deleteAttendanceByGroupId,
 };
 
 export interface Attendance {

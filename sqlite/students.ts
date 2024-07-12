@@ -64,8 +64,6 @@ const deleteStudent = async (id: number): Promise<void> => {
     await db.runAsync(
       `
       DELETE FROM students WHERE id = ?;
-      DELETE FROM attendance WHERE student_id = ?;
-      DELETE FROM payment WHERE student_id = ?;
     `,
       [id, id, id]
     );
@@ -102,6 +100,15 @@ const clearStudentsTable = async (): Promise<void> => {
   }
 };
 
+const deleteStudentsByGroupId = async (group_id: number): Promise<void> => {
+  try {
+    const db = await openStudentsAsync();
+    await db.runAsync("DELETE FROM students WHERE group_id = ?", [group_id]);
+  } catch (error) {
+    console.error("Error in deleteStudentsByGroupId:", error);
+  }
+};
+
 export {
   createStudentTables,
   addStudent,
@@ -109,6 +116,7 @@ export {
   deleteStudent,
   updateStudent,
   clearStudentsTable,
+  deleteStudentsByGroupId,
 };
 
 export interface Student {

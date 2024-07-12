@@ -137,7 +137,7 @@ const ShowPaying = () => {
           }
         })
       );
-      showToast("Saved successfully");
+      showToast("Saved Successfully");
       router.back();
     } catch (error) {
       console.error("Error saving payments:", error);

@@ -38,7 +38,7 @@ const AddStudent = () => {
 
     try {
       await addStudent(name, phone, parentPhone, Number(group_id));
-      showToast("Added successfully");
+      showToast("Added Successfully");
       router.replace("..");
     } catch (error) {
       Alert.alert("Error", "Failed to add student. Please try again.");

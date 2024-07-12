@@ -80,10 +80,20 @@ const deletePaymentByStudentId = async (studentId: number): Promise<void> => {
   }
 };
 
+const deletePaymentByGroupId = async (groupId: number): Promise<void> => {
+  try {
+    const db = await openPaymentAsync();
+    await db.getAllAsync("DELETE FROM payment WHERE group_id = ?", [groupId]);
+  } catch (error) {
+    console.error("Error in deletePaymentByGroupId:", error);
+  }
+};
+
 export {
   createPaymentTables,
   addPayment,
   updatePayment,
   getPaymentByGroupId,
   deletePaymentByStudentId,
+  deletePaymentByGroupId,
 };
