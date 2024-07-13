@@ -10,9 +10,9 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { updateStudent, deleteStudent } from "@/sqlite/students";
 import showToast from "@/components/showToast";
-import StudentModal from "@/components/student/StudentModal";
 import { deleteAttendanceByStudentId } from "@/sqlite/attendance";
 import { deletePaymentByStudentId } from "@/sqlite/paying";
+import CustomModal from "@/components/modals/CustomModal";
 
 const EditStudent = () => {
   const {
@@ -103,7 +103,7 @@ const EditStudent = () => {
         <Text style={styles.deleteButtonText}>Delete Student</Text>
       </TouchableOpacity>
 
-      <StudentModal
+      <CustomModal
         isVisible={modalVisible}
         message="Are you sure you want to delete this student?"
         onConfirm={handleDeleteStudent}

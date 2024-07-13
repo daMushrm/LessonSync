@@ -19,7 +19,7 @@ import {
 } from "@/sqlite/attendance";
 import openWhatsApp from "@/components/openWhatsApp";
 import showToast from "@/components/showToast";
-import InfoModal from "@/components/attendance/InfoModal";
+import CustomModal from "@/components/modals/CustomModal";
 
 const ShowAttendance = () => {
   const { group_id } = useLocalSearchParams();
@@ -95,7 +95,7 @@ const ShowAttendance = () => {
   };
 
   const handleCreate = async () => {
-    const todaysDate = new Date().toISOString().split("T")[0];
+    new Date().toISOString().split("T")[0];
     setIsModalVisible(true);
   };
 
@@ -171,7 +171,7 @@ const ShowAttendance = () => {
         <Text style={styles.saveButtonText}>Create Attendance Sheet</Text>
       </TouchableOpacity>
 
-      <InfoModal
+      <CustomModal
         isVisible={isModalVisible}
         message={`Are you sure you want to create attendance for ${groupStudents.length} students?`}
         onConfirm={handleConfirmCreate}

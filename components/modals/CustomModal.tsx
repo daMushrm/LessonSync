@@ -2,19 +2,19 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Modal from "react-native-modal";
 
-type InfoModalProps = {
+type CustomModalProps = {
   isVisible: boolean;
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
 };
 
-const InfoModal = ({
+const CustomModal = ({
   isVisible,
   message,
   onConfirm,
   onCancel,
-}: InfoModalProps) => {
+}: CustomModalProps) => {
   return (
     <Modal isVisible={isVisible}>
       <View style={styles.modalContainer}>
@@ -70,4 +70,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InfoModal;
+export default CustomModal;
