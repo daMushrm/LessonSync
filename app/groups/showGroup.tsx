@@ -7,7 +7,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import { Feather, FontAwesome } from "@expo/vector-icons";
+import { Feather, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { getStudentsByGroupId } from "@/sqlite/students";
 import { getGroupById } from "@/sqlite/groups";
@@ -107,6 +107,9 @@ const ShowGroup = () => {
 
       <View style={styles.studentHeaderContainer}>
         <Text style={styles.studentsHeader}>Students</Text>
+        <TouchableOpacity onPress={handleAddStudent} style={styles.addIcon}>
+          <FontAwesome name="plus" size={20} color="white" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.studentsSection}>
@@ -118,27 +121,30 @@ const ShowGroup = () => {
         />
       </View>
 
-      <View style={styles.buttonsContainer}>
+      <View style={styles.iconsContainer}>
         <TouchableOpacity
-          style={styles.attButton}
+          style={styles.iconButton}
           onPress={() =>
             router.push("/attendance/showAttendance?group_id=" + group_id)
           }
         >
-          <Text style={styles.attButtonText}>Attendance</Text>
+          <MaterialIcons name="event-note" size={30} color="black" />
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.payingButton}
+          style={styles.iconButton}
+          onPress={() => console.log("Performance icon pressed")}
+        >
+          <FontAwesome name="line-chart" size={30} color="black" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.iconButton}
           onPress={() => router.push("/paying/showPaying?group_id=" + group_id)}
         >
-          <Text style={styles.payingButtonText}>Paying</Text>
+          <FontAwesome name="money" size={30} color="black" />
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
-        <Text style={styles.addButtonText}>Add Student</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -155,7 +161,6 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -168,7 +173,6 @@ const styles = StyleSheet.create({
   },
   timeContainer: {
     paddingHorizontal: 16,
-
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 30,
@@ -180,6 +184,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   studentHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "black",
     padding: 10,
     marginBottom: 10,
@@ -191,9 +198,11 @@ const styles = StyleSheet.create({
     padding: 10,
     textAlign: "center",
   },
+  addIcon: {
+    padding: 10,
+  },
   studentsSection: {
     paddingHorizontal: 16,
-
     flex: 1,
     backgroundColor: "#fff",
   },
@@ -212,54 +221,19 @@ const styles = StyleSheet.create({
   studentName: {
     fontSize: 16,
   },
-  buttonsContainer: {
-    paddingHorizontal: 16,
-
+  iconsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     marginTop: 16,
+    marginBottom: 16,
   },
-  attButton: {
+  iconButton: {
     flex: 1,
-    backgroundColor: "#fff",
-    borderColor: "#000",
-    borderWidth: 1,
-    paddingVertical: 12,
-    borderRadius: 10,
     alignItems: "center",
-    marginRight: 10,
-  },
-  attButtonText: {
-    color: "#000",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  payingButton: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderColor: "#000",
-    borderWidth: 1,
     paddingVertical: 12,
+    marginHorizontal: 8,
     borderRadius: 10,
-    alignItems: "center",
-  },
-  payingButtonText: {
-    color: "#000",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  addButton: {
-    margin: 16,
-    backgroundColor: "#000",
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  addButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+    backgroundColor: "#f0f0f0",
   },
 });
 
