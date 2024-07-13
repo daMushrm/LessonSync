@@ -43,12 +43,14 @@ const ShowAttendance = () => {
     if (uniqueDates.length > 0) {
       setSelectedDate(uniqueDates[0]);
       setListedStudents(
-        attendance.map((record) => ({
-          id: record.id,
-          name: record.name,
-          checked: record.date === uniqueDates[0] && record.attended,
-          student_id: record.student_id,
-        }))
+        attendance
+          .filter((record) => record.date === uniqueDates[0])
+          .map((record) => ({
+            id: record.id,
+            name: record.name,
+            checked: record.attended,
+            student_id: record.student_id,
+          }))
       );
     }
   }, [attendance]);
@@ -80,9 +82,17 @@ const ShowAttendance = () => {
   const handleChangeDate = (date: string) => {
     setSelectedDate(date);
     setListedStudents(
-      attendance.filter(
-        (record) => record.group_id === Number(group_id) && record.date === date
-      )
+      attendance
+        .filter(
+          (record) =>
+            record.group_id === Number(group_id) && record.date === date
+        )
+        .map((record) => ({
+          id: record.id,
+          name: record.name,
+          checked: record.attended,
+          student_id: record.student_id,
+        }))
     );
   };
 
