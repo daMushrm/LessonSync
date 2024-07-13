@@ -11,7 +11,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { updateStudent, deleteStudent } from "@/sqlite/students";
 import showToast from "@/components/showToast";
 import { deleteAttendanceByStudentId } from "@/sqlite/attendance";
-import { deletePaymentByStudentId } from "@/sqlite/paying";
+import { deleteFinanceByStudentId } from "@/sqlite/finance";
 import CustomModal from "@/components/modals/CustomModal";
 
 const EditStudent = () => {
@@ -54,7 +54,7 @@ const EditStudent = () => {
     try {
       await deleteStudent(Number(id));
       await deleteAttendanceByStudentId(Number(id));
-      await deletePaymentByStudentId(Number(id));
+      await deleteFinanceByStudentId(Number(id));
       showToast("Deleted Successfully");
       router.replace("..");
     } catch (error) {

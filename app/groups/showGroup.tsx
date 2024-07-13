@@ -140,7 +140,7 @@ const ShowGroup = () => {
 
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => router.push("/paying/showPaying?group_id=" + group_id)}
+          onPress={() => router.push("/finance/showFinance?group_id=" + group_id)}
         >
           <FontAwesome name="money" size={30} color="black" />
         </TouchableOpacity>

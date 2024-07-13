@@ -28,7 +28,7 @@ export default function RootLayout() {
           name="attendance/showAttendance"
           options={{ title: "Attendance" }}
         />
-        <Stack.Screen name="paying/showPaying" options={{ title: "Paying" }} />
+        <Stack.Screen name="finance/showFinance" options={{ title: "Finance" }} />
       </Stack>
       <Toast />
     </>

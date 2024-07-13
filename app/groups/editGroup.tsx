@@ -14,7 +14,7 @@ import { deleteGroup, updateGroup } from "@/sqlite/groups";
 import showToast from "@/components/showToast";
 import { deleteStudentsByGroupId } from "@/sqlite/students";
 import { deleteAttendanceByGroupId } from "@/sqlite/attendance";
-import { deletePaymentByGroupId } from "@/sqlite/paying";
+import { deleteFinanceByGroupId } from "@/sqlite/finance";
 
 const EditGroup = () => {
   const {
@@ -76,7 +76,7 @@ const EditGroup = () => {
       await deleteGroup(Number(id));
       await deleteStudentsByGroupId(Number(id));
       await deleteAttendanceByGroupId(Number(id));
-      await deletePaymentByGroupId(Number(id));
+      await deleteFinanceByGroupId(Number(id));
       showToast("Deleted Successfully");
       router.replace("/");
     } catch (error) {

@@ -13,14 +13,14 @@ import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { getStudentsByGroupId } from "@/sqlite/students";
 import {
-  addPayment,
-  createPaymentTables,
-  getPaymentByGroupId,
-  updatePayment,
-} from "@/sqlite/paying";
+  addFinance,
+  createFinanceTables,
+  getFinanceByGroupId,
+  updateFinance,
+} from "@/sqlite/finance";
 import showToast from "@/components/showToast";
 
-const ShowPaying = () => {
+const ShowFinance = () => {
   const { group_id } = useLocalSearchParams();
   const [listedStudents, setListedStudents] = useState<
     { id: number; name: string; checked: boolean; student_id: number }[]
@@ -49,7 +49,7 @@ const ShowPaying = () => {
 
   const fetchPayments = useCallback(async (groupId: number) => {
     try {
-      const result = await getPaymentByGroupId(groupId);
+      const result = await getFinanceByGroupId(groupId);
       setPayments(result);
     } catch (error) {
       console.error("Error fetching payments:", error);
@@ -69,7 +69,7 @@ const ShowPaying = () => {
 
   useEffect(() => {
     const initializeComponent = async () => {
-      await createPaymentTables();
+      await createFinanceTables();
       const groupIdNumber = Number(group_id);
       await fetchPayments(groupIdNumber);
       await fetchStudents(groupIdNumber);
@@ -125,9 +125,9 @@ const ShowPaying = () => {
               record.student_id === student.student_id
           );
           if (existingRecord) {
-            await updatePayment(existingRecord.id, student.checked);
+            await updateFinance(existingRecord.id, student.checked);
           } else {
-            await addPayment(
+            await addFinance(
               selectedMonth,
               selectedYear,
               Number(group_id),
@@ -267,4 +267,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ShowPaying;
+export default ShowFinance;
