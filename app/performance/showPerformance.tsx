@@ -1,60 +1,62 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox";
 import { Picker } from "@react-native-picker/picker";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { getStudentsByGroupId } from "@/sqlite/students";
 import {
-  addAttendance,
-  createAttendanceTables,
-  getAttendanceByGroupId,
-  updateAttendance,
-} from "@/sqlite/attendance";
+  addPerformance,
+  createPerformanceTables,
+  getPerformanceByGroupId,
+  updatePerformance,
+} from "@/sqlite/performance";
 import openWhatsApp from "@/components/openWhatsApp";
 import showToast from "@/components/showToast";
 import CustomModal from "@/components/modals/CustomModal";
+import { FontAwesome } from "@expo/vector-icons";
 
-const ShowAttendance = () => {
+const ShowPerformance = () => {
   const { group_id } = useLocalSearchParams();
   const [listedStudents, setListedStudents] = useState<
-    { id: number; name: string; checked: boolean; student_id: number }[]
+    { id: number; name: string; score: number; student_id: number }[]
   >([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
-  const [attendance, setAttendance] = useState<any[]>([]);
+  const [performance, setPerformance] = useState<any[]>([]);
   const [dates, setDates] = useState<string[]>([]);
   const [groupStudents, setGroupStudents] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const fetchAttendance = useCallback(async (groupId: number) => {
-    const result = await getAttendanceByGroupId(groupId);
-    setAttendance(result);
+  const fetchPerformance = useCallback(async (groupId: number) => {
+    const result = await getPerformanceByGroupId(groupId);
+    setPerformance(result);
   }, []);
 
   const getDates = useCallback(() => {
-    const uniqueDates = [...new Set(attendance.map((record) => record.date))];
+    const uniqueDates = [...new Set(performance.map((record) => record.date))];
     setDates(uniqueDates);
     if (uniqueDates.length > 0) {
       const todaysDate = new Date().toISOString().split("T")[0];
-      setSelectedDate(uniqueDates.includes(todaysDate) ? todaysDate : uniqueDates[0]);
+      setSelectedDate(
+        uniqueDates.includes(todaysDate) ? todaysDate : uniqueDates[0]
+      );
       setListedStudents(
-        attendance
+        performance
           .filter((record) => record.date === selectedDate)
           .map((record) => ({
             id: record.id,
             name: record.name,
-            checked: record.attended,
+            score: record.score,
             student_id: record.student_id,
           }))
       );
     }
-  }, [attendance]);
+  }, [performance]);
 
   const fetchStudents = useCallback(async (groupId: number) => {
     const students = await getStudentsByGroupId(groupId);
@@ -63,19 +65,21 @@ const ShowAttendance = () => {
 
   useFocusEffect(
     useCallback(() => {
-      createAttendanceTables();
-      fetchAttendance(Number(group_id));
+      createPerformanceTables();
+      fetchPerformance(Number(group_id));
       fetchStudents(Number(group_id));
-    }, [group_id, fetchAttendance, fetchStudents])
+    }, [group_id, fetchPerformance, fetchStudents])
   );
 
   useEffect(() => {
     getDates();
-  }, [attendance, getDates]);
+  }, [performance, getDates]);
 
-  const handleCheck = (id: number) => {
+  const handleScoreChange = (id: number, score: string) => {
     const updatedStudents = listedStudents.map((student) =>
-      student.id === id ? { ...student, checked: !student.checked } : student
+      student.id === id
+        ? { ...student, score: parseInt(score, 10) || 0 }
+        : student
     );
     setListedStudents(updatedStudents);
   };
@@ -83,7 +87,7 @@ const ShowAttendance = () => {
   const handleChangeDate = (date: string) => {
     setSelectedDate(date);
     setListedStudents(
-      attendance
+      performance
         .filter(
           (record) =>
             record.group_id === Number(group_id) && record.date === date
@@ -91,7 +95,7 @@ const ShowAttendance = () => {
         .map((record) => ({
           id: record.id,
           name: record.name,
-          checked: record.attended,
+          score: record.score,
           student_id: record.student_id,
         }))
     );
@@ -99,7 +103,7 @@ const ShowAttendance = () => {
 
   const handleSave = () => {
     listedStudents.forEach((student) => {
-      updateAttendance(student.id, student.checked);
+      updatePerformance(student.id, student.score);
     });
     showToast("Saved Successfully");
     router.back();
@@ -114,9 +118,17 @@ const ShowAttendance = () => {
     setIsModalVisible(false);
     const todaysDate = new Date().toISOString().split("T")[0];
     groupStudents.forEach((student) => {
-      addAttendance(todaysDate, Number(group_id), student.id, false);
+      const existingPerformance = performance.find(
+      (record) =>
+        record.group_id === Number(group_id) &&
+        record.date === todaysDate &&
+        record.student_id === student.id
+      );
+      if (!existingPerformance) {
+      addPerformance(todaysDate, Number(group_id), student.id, 0);
+      }
     });
-    fetchAttendance(Number(group_id));
+    fetchPerformance(Number(group_id));
     showToast("Created Successfully");
     router.back();
   };
@@ -129,28 +141,21 @@ const ShowAttendance = () => {
     const student = groupStudents.find(
       (student) => student.id === item.student_id
     );
-    const parentPhone = student?.parent_phone || "";
-    const whatsAppMessage = `الطالب ${student?.name} لم يحضر الحصة اليوم
-    بتاريخ ${selectedDate}`;
 
     return (
       <View style={styles.studentContainer}>
-        <TouchableOpacity
-          onPress={() => openWhatsApp(parentPhone, whatsAppMessage)}
-        >
-          {!item.checked && (
-            <FontAwesome
-              name="whatsapp"
-              size={24}
-              color={item.checked ? "gray" : "green"}
-            />
-          )}
-        </TouchableOpacity>
         <Text style={styles.studentName}>{student?.name}</Text>
-        <Checkbox
-          value={item.checked ? true : false}
-          onValueChange={() => handleCheck(item.id)}
-          color={item.checked ? "#000" : undefined}
+        <TextInput
+          style={styles.scoreInput}
+          value={item.score.toString()}
+          keyboardType="numeric"
+          maxLength={3}
+          onChangeText={(text) => {
+            const score = parseInt(text, 10);
+            if (!isNaN(score) && score >= 0 && score <= 100) {
+              handleScoreChange(item.id, text);
+            }
+          }}
         />
       </View>
     );
@@ -158,7 +163,7 @@ const ShowAttendance = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose Attendance Date</Text>
+      <Text style={styles.title}>Choose Performance Date</Text>
       <Picker
         selectedValue={selectedDate}
         onValueChange={(itemValue) => handleChangeDate(itemValue)}
@@ -179,12 +184,12 @@ const ShowAttendance = () => {
         <Text style={styles.saveButtonText}>Save</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addButton} onPress={handleCreate}>
-        <Text style={styles.saveButtonText}>Create Attendance Sheet</Text>
+        <Text style={styles.saveButtonText}>Create Performance Sheet</Text>
       </TouchableOpacity>
 
       <CustomModal
         isVisible={isModalVisible}
-        message={`Are you sure you want to create attendance for ${groupStudents.length} students?`}
+        message={`Are you sure you want to create performance records for ${groupStudents.length} students?`}
         onConfirm={handleConfirmCreate}
         onCancel={handleCancelCreate}
       />
@@ -224,6 +229,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
   },
+  scoreInput: {
+    width: 50,
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    textAlign: "center",
+  },
   saveButton: {
     position: "absolute",
     bottom: 20,
@@ -251,4 +264,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ShowAttendance;
+export default ShowPerformance;

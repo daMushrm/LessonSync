@@ -133,7 +133,9 @@ const ShowGroup = () => {
 
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => console.log("Performance icon pressed")}
+          onPress={() =>
+            router.push("/performance/showPerformance?group_id=" + group_id)
+          }
         >
           <FontAwesome name="line-chart" size={30} color="black" />
         </TouchableOpacity>
