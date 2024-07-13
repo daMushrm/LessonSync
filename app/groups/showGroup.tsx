@@ -106,8 +106,8 @@ const ShowGroup = () => {
       </View>
 
       <View style={styles.studentHeaderContainer}>
-        <Text style={styles.studentsHeader}>Students</Text>
         <TouchableOpacity onPress={handleAddStudent} style={styles.addIcon}>
+          <Text style={styles.studentsHeader}>Students</Text>
           <FontAwesome name="plus" size={20} color="white" />
         </TouchableOpacity>
       </View>
@@ -140,7 +140,9 @@ const ShowGroup = () => {
 
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => router.push("/finance/showFinance?group_id=" + group_id)}
+          onPress={() =>
+            router.push("/finance/showFinance?group_id=" + group_id)
+          }
         >
           <FontAwesome name="money" size={30} color="black" />
         </TouchableOpacity>
@@ -186,9 +188,9 @@ const styles = StyleSheet.create({
   studentHeaderContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     backgroundColor: "black",
-    padding: 10,
+    padding: 4,
     marginBottom: 10,
   },
   studentsHeader: {
@@ -200,6 +202,8 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
   },
   studentsSection: {
     paddingHorizontal: 16,
