@@ -41,10 +41,11 @@ const ShowAttendance = () => {
     const uniqueDates = [...new Set(attendance.map((record) => record.date))];
     setDates(uniqueDates);
     if (uniqueDates.length > 0) {
-      setSelectedDate(uniqueDates[0]);
+      const todaysDate = new Date().toISOString().split("T")[0];
+      setSelectedDate(uniqueDates.includes(todaysDate) ? todaysDate : uniqueDates[0]);
       setListedStudents(
         attendance
-          .filter((record) => record.date === uniqueDates[0])
+          .filter((record) => record.date === selectedDate)
           .map((record) => ({
             id: record.id,
             name: record.name,
