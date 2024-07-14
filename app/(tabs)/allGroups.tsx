@@ -24,7 +24,7 @@ const daysOfWeek = [
 const getDayIndex = (day: string) => daysOfWeek.indexOf(day);
 
 const AllGroups = () => {
-  const [groups, setGroups] = useState<Group[][]>([]);
+  const [groups, setGroups] = useState<{ [key: string]: Group[] }>({});
 
   const fetchGroups = async () => {
     const fetchedGroups = await getAllGroups();
@@ -42,16 +42,15 @@ const AllGroups = () => {
     });
 
     // Group sortedGroups by day
-    const groupedByDay = daysOfWeek.map((day) =>
-      sortedGroups.filter((group) => group.day === day)
-    );
+    const groupedByDay = daysOfWeek.reduce((acc, day) => {
+      const dayGroups = sortedGroups.filter((group) => group.day === day);
+      if (dayGroups.length > 0) {
+        acc[day] = dayGroups;
+      }
+      return acc;
+    }, {} as { [key: string]: Group[] });
 
-    // Filter out days with no groups
-    const filteredGroups = groupedByDay.filter(
-      (dayGroups) => dayGroups.length > 0
-    );
-
-    setGroups(filteredGroups);
+    setGroups(groupedByDay);
   };
 
   useFocusEffect(
@@ -69,10 +68,10 @@ const AllGroups = () => {
 
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
-          {groups.map((dayGroups, index) => (
-            <View key={index}>
-              <Text style={styles.dayTitle}>{daysOfWeek[index]}</Text>
-              {dayGroups.map((group) => (
+          {Object.keys(groups).map((day) => (
+            <View key={day}>
+              <Text style={styles.dayTitle}>{day}</Text>
+              {groups[day].map((group) => (
                 <GroupCard key={group.id} group={group} />
               ))}
             </View>
