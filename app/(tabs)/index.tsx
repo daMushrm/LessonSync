@@ -16,7 +16,9 @@ const Index = () => {
   const [todaysGroups, setTodaysGroups] = useState([]);
   const [welcomePhrase, setWelcomePhrase] = useState("");
 
-  const name = "Tarek"; // This could be dynamic, fetched from user profile
+  const gender = "male";
+  const title = gender === "male" ? "Mr. " : "Mrs. ";
+  const name = title + "Tarek";
 
   useFocusEffect(
     useCallback(() => {
@@ -35,6 +37,15 @@ const Index = () => {
       );
     }, [])
   );
+
+  if (!todaysGroups[0]) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcomeText}>Hi, {name}!</Text>
+        <Text style={styles.phraseText}>No Lessons for Today</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
