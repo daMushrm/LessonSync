@@ -10,12 +10,48 @@ import { useFocusEffect, router } from "expo-router";
 import { Group, createGroupTables, getAllGroups } from "@/sqlite/groups";
 import GroupCard from "@/components/Card";
 
+const daysOfWeek = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+// Function to get the day index for sorting
+const getDayIndex = (day: string) => daysOfWeek.indexOf(day);
+
 const AllGroups = () => {
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [groups, setGroups] = useState<Group[][]>([]);
 
   const fetchGroups = async () => {
     const fetchedGroups = await getAllGroups();
-    setGroups(fetchedGroups);
+
+    // Sort groups by day and time within each day
+    const sortedGroups = fetchedGroups.sort((a, b) => {
+      const dayComparison = getDayIndex(a.day) - getDayIndex(b.day);
+      if (dayComparison !== 0) {
+        return dayComparison;
+      }
+      // Compare times as numbers (HHmm format)
+      const timeA = Number(a.time.replace(":", ""));
+      const timeB = Number(b.time.replace(":", ""));
+      return timeA - timeB;
+    });
+
+    // Group sortedGroups by day
+    const groupedByDay = daysOfWeek.map((day) =>
+      sortedGroups.filter((group) => group.day === day)
+    );
+
+    // Filter out days with no groups
+    const filteredGroups = groupedByDay.filter(
+      (dayGroups) => dayGroups.length > 0
+    );
+
+    setGroups(filteredGroups);
   };
 
   useFocusEffect(
@@ -33,8 +69,13 @@ const AllGroups = () => {
 
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
-          {groups.map((group) => (
-            <GroupCard key={group.id} group={group} />
+          {groups.map((dayGroups, index) => (
+            <View key={index}>
+              <Text style={styles.dayTitle}>{daysOfWeek[index]}</Text>
+              {dayGroups.map((group) => (
+                <GroupCard key={group.id} group={group} />
+              ))}
+            </View>
           ))}
         </ScrollView>
         <TouchableOpacity
@@ -81,23 +122,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  tabBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 50,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
-  },
-  tabBarButton: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  dayTitle: {
+    fontSize: 20,
+    marginTop: 10,
+    fontWeight: "bold",
+    marginBottom: 5,
   },
 });
 

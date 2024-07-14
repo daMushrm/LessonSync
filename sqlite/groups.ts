@@ -89,7 +89,6 @@ const updateGroup = async (
       "UPDATE groups SET name = ?, day = ?, time = ? WHERE id = ?",
       [name, day, time, id]
     );
-    console.log("Group updated");
   } catch (error) {
     console.error("Error in updateGroup:", error);
   }
