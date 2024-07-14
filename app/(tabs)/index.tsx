@@ -25,7 +25,9 @@ const Index = () => {
           weekday: "long",
         });
         const groups = await getGroupsByDay(today);
-        setTodaysGroups(groups);
+        setTodaysGroups(
+          groups.sort((a: any, b: any) => a.time.localeCompare(b.time)) // order them by time
+        );
       };
       fetchTodaysGroups();
       setWelcomePhrase(
