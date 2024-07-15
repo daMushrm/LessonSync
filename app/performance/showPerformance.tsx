@@ -16,10 +16,8 @@ import {
   getPerformanceByGroupId,
   updatePerformance,
 } from "@/sqlite/performance";
-import openWhatsApp from "@/components/openWhatsApp";
 import showToast from "@/components/showToast";
 import CustomModal from "@/components/modals/CustomModal";
-import { FontAwesome } from "@expo/vector-icons";
 
 const ShowPerformance = () => {
   const { group_id } = useLocalSearchParams();
@@ -119,13 +117,13 @@ const ShowPerformance = () => {
     const todaysDate = new Date().toISOString().split("T")[0];
     groupStudents.forEach((student) => {
       const existingPerformance = performance.find(
-      (record) =>
-        record.group_id === Number(group_id) &&
-        record.date === todaysDate &&
-        record.student_id === student.id
+        (record) =>
+          record.group_id === Number(group_id) &&
+          record.date === todaysDate &&
+          record.student_id === student.id
       );
       if (!existingPerformance) {
-      addPerformance(todaysDate, Number(group_id), student.id, 0);
+        addPerformance(todaysDate, Number(group_id), student.id, 0);
       }
     });
     fetchPerformance(Number(group_id));
@@ -184,7 +182,9 @@ const ShowPerformance = () => {
         <Text style={styles.saveButtonText}>Save</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addButton} onPress={handleCreate}>
-        <Text style={styles.saveButtonText}>Create Performance Sheet</Text>
+        <Text style={styles.saveButtonText}>
+          Create Today's Performance Sheet
+        </Text>
       </TouchableOpacity>
 
       <CustomModal

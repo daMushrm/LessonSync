@@ -145,22 +145,9 @@ const ShowFinance = () => {
     }
   }, [listedStudents, payments, selectedMonth, selectedYear, group_id]);
 
-  const openWhatsApp = useCallback((studentName: string) => {
-    Alert.alert("WhatsApp", `Open WhatsApp for ${studentName}`);
-    // Add your logic to open WhatsApp for the student
-  }, []);
-
   const renderStudent = ({ item }: { item: any }) => (
     <View style={styles.studentContainer}>
-      <TouchableOpacity onPress={() => openWhatsApp(item.name)}>
-        {!item.checked && (
-          <FontAwesome
-            name="whatsapp"
-            size={24}
-            color={item.checked ? "gray" : "green"}
-          />
-        )}
-      </TouchableOpacity>
+    
       <Text style={styles.studentName}>
         {groupStudents.find((student) => student.id === item.student_id)?.name}
       </Text>

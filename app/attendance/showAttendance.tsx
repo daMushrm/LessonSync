@@ -42,7 +42,9 @@ const ShowAttendance = () => {
     setDates(uniqueDates);
     if (uniqueDates.length > 0) {
       const todaysDate = new Date().toISOString().split("T")[0];
-      setSelectedDate(uniqueDates.includes(todaysDate) ? todaysDate : uniqueDates[0]);
+      setSelectedDate(
+        uniqueDates.includes(todaysDate) ? todaysDate : uniqueDates[0]
+      );
       setListedStudents(
         attendance
           .filter((record) => record.date === selectedDate)
@@ -179,7 +181,9 @@ const ShowAttendance = () => {
         <Text style={styles.saveButtonText}>Save</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addButton} onPress={handleCreate}>
-        <Text style={styles.saveButtonText}>Create Attendance Sheet</Text>
+        <Text style={styles.saveButtonText}>
+          Create Today's Attendance Sheet
+        </Text>
       </TouchableOpacity>
 
       <CustomModal
