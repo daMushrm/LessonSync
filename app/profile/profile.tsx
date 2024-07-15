@@ -5,12 +5,10 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { addName, getName, updateName } from "@/sqlite/profile";
 import showToast from "@/components/showToast";
-import exportDb from "@/sqlite/backup/export";
 import Toast from "react-native-toast-message";
 
 const Profile = () => {
@@ -63,9 +61,6 @@ const Profile = () => {
           <Ionicons name="checkmark-sharp" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={exportDb} style={styles.backupButton}>
-        <Text>Backup</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -107,13 +102,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#000",
   },
-  backupButton: {
-    marginTop: 16,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    alignItems: "center",
-  }, 
 });
 
 export default Profile;
