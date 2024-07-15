@@ -15,7 +15,7 @@ import { addGroup, createGroupTables } from "@/sqlite/groups";
 const AddGroup = () => {
   const [name, setName] = useState("");
   const [day, setDay] = useState("Monday");
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState(() => new Date()); // Use default parameter for time state
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   useEffect(() => {

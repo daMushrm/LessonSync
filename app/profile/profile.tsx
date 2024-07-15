@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 8,
     alignItems: "center",
-  },
+  }, 
 });
 
 export default Profile;
