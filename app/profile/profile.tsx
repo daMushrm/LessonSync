@@ -5,11 +5,13 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Linking,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { addName, getName, updateName } from "@/sqlite/profile";
 import showToast from "@/components/showToast";
 import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
 const Profile = () => {
   const [username, setUsername] = useState("");
@@ -49,16 +51,26 @@ const Profile = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Change Your Display Name:</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your name"
-          value={username}
-          onChangeText={setUsername}
-        />
-        <TouchableOpacity style={styles.iconButton} onPress={handleSave}>
-          <Ionicons name="checkmark-sharp" size={24} color="#fff" />
+      <View>
+        <Text style={styles.label}>Change Your Display Name:</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your name"
+            value={username}
+            onChangeText={setUsername}
+          />
+          <TouchableOpacity style={styles.iconButton} onPress={handleSave}>
+            <Ionicons name="checkmark-sharp" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Developer info footer */}
+      <View style={styles.footer}>
+        <Text>Developed with ❤️ by </Text>
+        <TouchableOpacity onPress={() => router.push("/profile/developer")}>
+          <Text style={styles.linkText}>Omar Mohamed</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -70,6 +82,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#fff",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   title: {
     fontSize: 24,
@@ -101,6 +115,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     backgroundColor: "#000",
+  },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
+    opacity: 0.6,
+  },
+  linkText: {
+    color: "blue",
+    textDecorationLine: "underline",
   },
 });
 

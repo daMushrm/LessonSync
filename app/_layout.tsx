@@ -37,6 +37,10 @@ export default function RootLayout() {
           options={{ title: "Performance" }}
         />
         <Stack.Screen name="profile/profile" options={{ title: "Profile" }} />
+        <Stack.Screen
+          name="profile/developer"
+          options={{ title: "Developer" }}
+        />
       </Stack>
       <Toast />
     </>
