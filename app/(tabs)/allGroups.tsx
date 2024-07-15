@@ -85,7 +85,7 @@ const AllGroups = () => {
         </TouchableOpacity>
       </View>
     </>
-  );
+);
 };
 
 const styles = StyleSheet.create({

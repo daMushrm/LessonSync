@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { deleteGroup, updateGroup } from "@/sqlite/groups";
@@ -27,48 +26,62 @@ const EditGroup = () => {
   const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [day, setDay] = useState("Monday");
-  const [time, setTime] = useState("12:00 PM"); // Initialize with a default time format
-  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [hours, setHours] = useState("");
+  const [minutes, setMinutes] = useState("");
+  const [amPm, setAmPm] = useState("AM");
 
   useEffect(() => {
     setId(groupId?.toString() || "");
     setName(initialName?.toString() || "");
     setDay(initialDay?.toString() || "Monday");
-    setTime(initialTime?.toString() || "12:00 PM"); // Set initial time format
+
+    if (initialTime) {
+      const [timePart, period] = (initialTime as string).split(" ");
+      const [initHours, initMinutes] = timePart.split(":");
+      setHours(initHours);
+      setMinutes(initMinutes);
+      setAmPm(period);
+    }
   }, [initialName, initialDay, initialTime]);
 
   const handleSaveGroup = async () => {
-    if (!name.trim() || !day.trim() || !time.trim()) {
+    if (
+      !name.trim() ||
+      !day.trim() ||
+      !hours.trim() ||
+      !minutes.trim() ||
+      !amPm.trim()
+    ) {
       Alert.alert("Error", "Please fill out all fields.");
       return;
     }
+
+    const hourNumber = parseInt(hours, 10);
+    const minuteNumber = parseInt(minutes, 10);
+
+    if (isNaN(hourNumber) || hourNumber < 1 || hourNumber > 12) {
+      Alert.alert("Error", "Please enter a valid hour between 1 and 12.");
+      return;
+    }
+
+    if (isNaN(minuteNumber) || minuteNumber < 0 || minuteNumber > 59) {
+      Alert.alert("Error", "Please enter a valid minute between 0 and 59.");
+      return;
+    }
+
+    const formattedTime = `${hours.padStart(2, "0")}:${minutes.padStart(
+      2,
+      "0"
+    )} ${amPm}`;
+
     try {
-      await updateGroup(Number(id), name, day, time);
+      await updateGroup(Number(id), name, day, formattedTime);
       showToast("Saved Successfully");
       router.back();
     } catch (error) {
       console.error("Error updating group:", error);
       Alert.alert("Error", "There was a problem updating the group.");
     }
-  };
-
-  const showTimePicker = () => {
-    setTimePickerVisibility(true);
-  };
-
-  const hideTimePicker = () => {
-    setTimePickerVisibility(false);
-  };
-
-  const handleTimeConfirm = (selectedTime: any) => {
-    // Format the selected time as needed (e.g., "10:12 PM")
-    const formattedTime = selectedTime.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-    setTime(formattedTime);
-    hideTimePicker();
   };
 
   const handleDeleteGroup = async () => {
@@ -129,15 +142,34 @@ const EditGroup = () => {
       </Picker>
 
       <Text style={styles.label}>Time:</Text>
-      <TouchableOpacity style={styles.input} onPress={showTimePicker}>
-        <Text>{time}</Text>
-      </TouchableOpacity>
-      <DateTimePickerModal
-        isVisible={isTimePickerVisible}
-        mode="time"
-        onConfirm={handleTimeConfirm}
-        onCancel={hideTimePicker}
-      />
+      <View style={styles.timeContainer}>
+        <TextInput
+          style={styles.timeInput}
+          value={hours}
+          onChangeText={(text) => setHours(text.replace(/[^0-9]/g, ""))}
+          placeholder="HH"
+          keyboardType="numeric"
+          maxLength={2}
+        />
+        <Text style={styles.colon}>:</Text>
+        <TextInput
+          style={styles.timeInput}
+          value={minutes}
+          onChangeText={(text) => setMinutes(text.replace(/[^0-9]/g, ""))}
+          placeholder="MM"
+          keyboardType="numeric"
+          maxLength={2}
+        />
+        <Text style={styles.amPm}>{amPm}</Text>
+        <Picker
+          selectedValue={amPm}
+          style={styles.amPmPicker}
+          onValueChange={(itemValue) => setAmPm(itemValue)}
+        >
+          <Picker.Item label="AM" value="AM" />
+          <Picker.Item label="PM" value="PM" />
+        </Picker>
+      </View>
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSaveGroup}>
         <Text style={styles.saveButtonText}>Save Changes</Text>
@@ -167,7 +199,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     paddingHorizontal: 10,
-    justifyContent: "center",
   },
   picker: {
     height: 40,
@@ -175,6 +206,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 16,
+  },
+  timeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  timeInput: {
+    height: 40,
+    width: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    textAlign: "center",
+  },
+  colon: {
+    fontSize: 20,
+    marginHorizontal: 5,
+  },
+  amPm: {
+    marginLeft: 10,
+    marginRight: -40,
+  },
+  amPmPicker: {
+    height: 40,
+    width: 80,
   },
   saveButton: {
     backgroundColor: "#000",
