@@ -10,7 +10,7 @@ import { getGroupsByDay } from "@/sqlite/groups";
 import GroupCard from "@/components/Card";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { createProfileTable, getMaleStatus, getName } from "@/sqlite/profile";
+import { createProfileTable, getName } from "@/sqlite/profile";
 
 const welcomePhrases = [
   "Let's dive into today's teaching!",
@@ -23,23 +23,16 @@ const welcomePhrases = [
 const Index = () => {
   const [todaysGroups, setTodaysGroups] = useState([]);
   const [welcomePhrase, setWelcomePhrase] = useState("");
-  const [name, setName] = useState("Guest");
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
 
   useFocusEffect(
     useCallback(() => {
       const fetchName = async () => {
         await createProfileTable();
         const name = await getName();
-        setName(name || "Guest");
+        setName(name ? name : "Guest");
       };
       fetchName();
-
-      const fetchTitle = async () => {
-        const status = await getMaleStatus();
-        setTitle(status === true ? "Mr. " : false ? "Ms. " : "");
-      };
-      fetchTitle();
 
       const fetchTodaysGroups = async () => {
         const today = new Date().toLocaleDateString("en-US", {
@@ -66,10 +59,7 @@ const Index = () => {
         >
           <Ionicons name="settings-outline" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.welcomeText}>
-          Hi, {title}
-          {name}!
-        </Text>
+        <Text style={styles.welcomeText}>Hi, {name}!</Text>
         <Text style={styles.phraseText}>No Lessons for Today</Text>
       </View>
     );
@@ -83,10 +73,7 @@ const Index = () => {
       >
         <Ionicons name="settings-outline" size={24} color="black" />
       </TouchableOpacity>
-      <Text style={styles.welcomeText}>
-        Welcome, {title}
-        {name}!
-      </Text>
+      <Text style={styles.welcomeText}>Welcome, {name}!</Text>
       <Text style={styles.phraseText}>{welcomePhrase}</Text>
       <ScrollView style={styles.scrollView}>
         {todaysGroups.map((group, index) => (

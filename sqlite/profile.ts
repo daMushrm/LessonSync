@@ -12,8 +12,7 @@ const createProfileTable = async (): Promise<void> => {
       PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS profile (
         id INTEGER PRIMARY KEY NOT NULL,
-        name TEXT NOT NULL,
-        male BOOLEAN NOT NULL DEFAULT 1
+        name TEXT NOT NULL
       );
     `);
   } catch (error) {
@@ -22,13 +21,10 @@ const createProfileTable = async (): Promise<void> => {
 };
 
 // Add name to the profile table
-const addName = async (name: string, male: boolean): Promise<void> => {
+const addName = async (name: string): Promise<void> => {
   try {
     const db = await openProfileAsync();
-    await db.runAsync("INSERT INTO profile (name, male) VALUES (?, ?)", [
-      name,
-      male ? 1 : 0,
-    ]);
+    await db.runAsync("INSERT INTO profile (name) VALUES (?)", [name]);
   } catch (error) {
     console.error("Error in addName:", error);
   }
@@ -44,17 +40,6 @@ const updateName = async (name: string): Promise<void> => {
   }
 };
 
-// Update male status in the profile table
-const updateMaleStatus = async (male: boolean): Promise<void> => {
-  try {
-    const db = await openProfileAsync();
-    await db.runAsync("UPDATE profile SET male = ? WHERE id = 1", [
-      male ? 1 : 0,
-    ]);
-  } catch (error) {
-    console.error("Error in updateMaleStatus:", error);
-  }
-};
 const getName = async (): Promise<string | undefined> => {
   try {
     const db = await openProfileAsync();
@@ -64,20 +49,6 @@ const getName = async (): Promise<string | undefined> => {
     return allRows[0]?.name;
   } catch (error) {
     console.error("Error in getName:", error);
-    return undefined;
-  }
-};
-
-const getMaleStatus = async (): Promise<boolean | undefined> => {
-  try {
-    const db = await openProfileAsync();
-    const allRows: { male: number }[] = await db.getAllAsync(
-      "SELECT male FROM profile WHERE id = 1"
-    );
-    const maleStatus = allRows[0]?.male;
-    return maleStatus === 1 ? true : false;
-  } catch (error) {
-    console.error("Error in getMaleStatus:", error);
     return undefined;
   }
 };
@@ -93,12 +64,4 @@ const clearProfileTable = async (): Promise<void> => {
   }
 };
 
-export {
-  createProfileTable,
-  addName,
-  updateName,
-  updateMaleStatus,
-  getName,
-  getMaleStatus,
-  clearProfileTable,
-};
+export { createProfileTable, addName, updateName, getName, clearProfileTable };

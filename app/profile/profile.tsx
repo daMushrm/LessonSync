@@ -8,7 +8,7 @@ import {
   Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getName, updateName } from "@/sqlite/profile";
+import { addName, getName, updateName } from "@/sqlite/profile";
 import showToast from "@/components/showToast";
 import exportDb from "@/sqlite/backup/export";
 import Toast from "react-native-toast-message";
@@ -36,12 +36,15 @@ const Profile = () => {
       },
     });
   };
+
   const handleSave = async () => {
     if (!username.trim()) {
       showInfoToast("Please add your name!");
       return;
     }
 
+    const storedName = await getName();
+    if (!storedName) await addName(username);
     await updateName(username);
     showToast("Name updated successfully");
   };
