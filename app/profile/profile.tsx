@@ -5,12 +5,13 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Alert,
+  Button,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Example import for Ionicons
-import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { getName, updateName } from "@/sqlite/profile";
-import showToast from "@/components/showToast"; // Assuming showToast is a custom component
+import showToast from "@/components/showToast";
+import exportDb from "@/sqlite/backup/export";
+import Toast from "react-native-toast-message";
 
 const Profile = () => {
   const [username, setUsername] = useState("");
@@ -24,9 +25,20 @@ const Profile = () => {
     fetchName();
   }, []);
 
+  const showInfoToast = (msg: string) => {
+    Toast.show({
+      type: "info",
+      text1: msg,
+      position: "top",
+      text1Style: {
+        fontSize: 18,
+        fontWeight: "normal",
+      },
+    });
+  };
   const handleSave = async () => {
     if (!username.trim()) {
-      Alert.alert("Error", "Please enter your name.");
+      showInfoToast("Please add your name!");
       return;
     }
 
@@ -48,6 +60,7 @@ const Profile = () => {
           <Ionicons name="checkmark-sharp" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
+      <Button title="export data" onPress={exportDb} />
     </View>
   );
 };

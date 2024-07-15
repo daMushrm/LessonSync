@@ -10,11 +10,7 @@ import { getGroupsByDay } from "@/sqlite/groups";
 import GroupCard from "@/components/Card";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  createProfileTable,
-  getMaleStatus,
-  getName,
-} from "@/sqlite/profile";
+import { createProfileTable, getMaleStatus, getName } from "@/sqlite/profile";
 
 const welcomePhrases = [
   "Let's dive into today's teaching!",
@@ -27,7 +23,7 @@ const welcomePhrases = [
 const Index = () => {
   const [todaysGroups, setTodaysGroups] = useState([]);
   const [welcomePhrase, setWelcomePhrase] = useState("");
-  const [name, setName] = useState("");
+  const [name, setName] = useState("Guest");
   const [title, setTitle] = useState("");
 
   useFocusEffect(
@@ -35,13 +31,13 @@ const Index = () => {
       const fetchName = async () => {
         await createProfileTable();
         const name = await getName();
-        setName(name || "");
+        setName(name || "Guest");
       };
       fetchName();
 
       const fetchTitle = async () => {
         const status = await getMaleStatus();
-        setTitle(status ? "Mr. " : "Ms. ");
+        setTitle(status === true ? "Mr. " : false ? "Ms. " : "");
       };
       fetchTitle();
 
@@ -66,7 +62,7 @@ const Index = () => {
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.settingsIcon}
-          onPress={() => router.push("/profile")}
+          onPress={() => router.push("/profile/profile")}
         >
           <Ionicons name="settings-outline" size={24} color="black" />
         </TouchableOpacity>
@@ -93,8 +89,8 @@ const Index = () => {
       </Text>
       <Text style={styles.phraseText}>{welcomePhrase}</Text>
       <ScrollView style={styles.scrollView}>
-        {todaysGroups.map((group) => (
-          <GroupCard group={group} />
+        {todaysGroups.map((group, index) => (
+          <GroupCard key={index} group={group} />
         ))}
       </ScrollView>
     </View>

@@ -82,6 +82,17 @@ const getMaleStatus = async (): Promise<boolean | undefined> => {
   }
 };
 
+const clearProfileTable = async (): Promise<void> => {
+  // for dev
+  try {
+    const db = await openProfileAsync();
+    await db.execAsync("DELETE FROM profile");
+    console.log("Profile table cleared successfully");
+  } catch (error) {
+    console.error("Error in clearProfileTable:", error);
+  }
+};
+
 export {
   createProfileTable,
   addName,
@@ -89,4 +100,5 @@ export {
   updateMaleStatus,
   getName,
   getMaleStatus,
+  clearProfileTable,
 };
