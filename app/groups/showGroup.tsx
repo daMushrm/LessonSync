@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Feather, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { getStudentsByGroupId } from "@/sqlite/students";
+import { createStudentTables, getStudentsByGroupId } from "@/sqlite/students";
 import { getGroupById } from "@/sqlite/groups";
 
 const ShowGroup = () => {
@@ -31,6 +31,7 @@ const ShowGroup = () => {
 
   useFocusEffect(
     useCallback(() => {
+      createStudentTables();
       getGroup();
 
       const fetchStudents = async () => {
