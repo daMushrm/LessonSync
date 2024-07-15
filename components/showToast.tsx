@@ -1,8 +1,8 @@
 import Toast from "react-native-toast-message";
 
-const showToast = (msg: string) => {
+const showToast = (msg: string, type: string = "success") => {
   Toast.show({
-    type: "success",
+    type: type,
     text1: msg,
     position: "top",
     text1Style: {
