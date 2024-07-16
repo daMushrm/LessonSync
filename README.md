@@ -1,3 +1,4 @@
+[Download](https://expo.dev/artifacts/eas/nqgkqxTgp5upx2ZMKKYnqJ.apk)
 # LessonSync 📚✨
 
 LessonSync is a powerful mobile application designed to revolutionize the educational experience for teachers and students alike. Packed with innovative features, it streamlines learning processes and simplifies the management of educational content and activities. Built with a cutting-edge technology stack, LessonSync delivers a smooth and responsive user experience across multiple platforms, including iOS, Android, and web browsers.
